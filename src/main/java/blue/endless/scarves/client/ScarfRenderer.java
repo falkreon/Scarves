@@ -18,22 +18,32 @@ public class ScarfRenderer {
 		VertexConsumer buf = vertexConsumers.getBuffer(RenderLayer.getCutoutMipped());
 		Matrix4f matrix = matrices.peek().getPositionMatrix();
 		
-		buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(0xFF_FFFFFF).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-		buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(0xFF_FFFFFF).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-		buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(0xFF_FFFFFF).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-		buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(0xFF_FFFFFF).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+		buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(color).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+		buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(color).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+		buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(color).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+		buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(color).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
 		
 		normal = normal.multiply(-1);
 		
 		if (doubleSided) {
-			buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(0xFF_FFFFFF).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-			buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(0xFF_FFFFFF).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-			buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(0xFF_FFFFFF).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-			buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(0xFF_FFFFFF).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+			buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(color).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+			buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(color).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+			buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(color).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+			buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(color).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
 		}
 	}
 	
-	public static void quad(Vec3d a, Vec3d b, Vec3d c, Vec3d d, FabricSquare tex, boolean doubleSided, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int light) {
-		
+	public static void quad(Vec3d a, Vec3d b, Vec3d c, Vec3d d, FabricSquare tex, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int light) {
+		quad(a,b,c,d,
+				new Vec2f(tex.uMin(), tex.vMin()),
+				new Vec2f(tex.uMin(), tex.vMax()),
+				new Vec2f(tex.uMax(), tex.vMax()),
+				new Vec2f(tex.uMax(), tex.vMin()),
+				
+				true,
+				
+				vertexConsumers, matrices,
+				tex.color(), light
+				);
 	}
 }

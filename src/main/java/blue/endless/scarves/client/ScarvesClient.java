@@ -1,5 +1,7 @@
 package blue.endless.scarves.client;
 
+import java.util.List;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import blue.endless.scarves.ScarvesItems;
@@ -24,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.LightType;
 
 public class ScarvesClient implements ClientModInitializer {
@@ -66,9 +69,55 @@ public class ScarvesClient implements ClientModInitializer {
 		for(Entity entity : ctx.world().getEntities()) {
 			if (entity instanceof IScarfHaver scarfHaver) {
 				try {
-				scarfHaver.iScarfHaver_getAttachments().forEach( it-> {
-					
-				});
+					scarfHaver.iScarfHaver_getAttachments(ctx.tickDelta()).forEach( it-> {
+						//ScarvesMod.LOGGER.info("Triggered scarf handling for "+entity.getEntityName());
+						//TODO: Physics
+						List<ScarfNode> nodes = it.nodes();
+						if (nodes.isEmpty()) return;
+						nodes.get(0).pullTowards(it.getLocation());
+						if (nodes.size()>1) for(int i=1; i<nodes.size(); i++) {
+							ScarfNode prev = nodes.get(i-1);
+							ScarfNode cur = nodes.get(i);
+							cur.pullTowards(prev.position);
+						}
+						
+						//TODO: Rendering
+						Vec3d prev = it.getLocation();
+						for(int i=0; i<nodes.size(); i++) {
+							ScarfNode cur = nodes.get(i);
+							
+							BlockPos curPos = new BlockPos(cur.position.add(0,0.25,0));
+							int nodeLight = LightmapTextureManager.pack(
+									ctx.world().getLightLevel(LightType.BLOCK, curPos),
+									ctx.world().getLightLevel(LightType.SKY, curPos)
+									);
+							
+							ScarfRenderer.quad(
+									prev,
+									prev.add(0,0.5,0),
+									//new Vec3d(0  , 0  , 0  ),
+									//new Vec3d(0  , 0.5, 0  ),
+									cur.position.add(0,0.5,0),
+									cur.position,
+									//new Vec3d(0.5, 0.5, 0  ),
+									//new Vec3d(0.5, 0  , 0  ),
+									cur.square,
+									//new Vec2f(cur.square.uMin(), cur.square.vMin()),
+									//new Vec2f(cur.square.uMin(), cur.square.vMax()),
+									//new Vec2f(cur.square.uMax(), cur.square.vMax()),
+									//new Vec2f(cur.square.uMax(), cur.square.vMin()),
+									
+									//true,
+									
+									ctx.consumers(),
+									ctx.matrixStack(),
+									nodeLight
+									);
+									//0xFF_FF00FF, nodeLight);
+							
+							prev = cur.position;
+						}
+					});
 				} catch (Throwable t) {
 					//TODO: Quietly flag the player
 				}
