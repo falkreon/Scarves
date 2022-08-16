@@ -4,7 +4,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ScarfNode {
 	/** Width of each fabric square in-world. */
-	public static final float FABRIC_SQUARE_WIDTH = 0.5f; // == 8 pixels / 16 pxPerMeter
+	public static final float FABRIC_SQUARE_WIDTH = 0.3f; // == 8 pixels / 16 pxPerMeter
 	/** Maximum d^2 allowed between fabric squares; the squared width of a square. */
 	public static final float SQUARED_WIDTH = FABRIC_SQUARE_WIDTH * FABRIC_SQUARE_WIDTH;
 	protected Vec3d position;

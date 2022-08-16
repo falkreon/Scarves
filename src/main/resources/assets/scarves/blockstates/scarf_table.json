@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"facing=east": {
+			"model": "scarves:block/scarf_table",
+			"y": 270
+		},
+		"facing=north": {
+			"model": "scarves:block/scarf_table",
+			"y": 180
+		},
+		"facing=south": {
+			"model": "scarves:block/scarf_table"
+		},
+		"facing=west": {
+			"model": "scarves:block/scarf_table",
+			"y": 90
+		}
+	}
+}

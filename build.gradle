@@ -19,6 +19,10 @@ repositories {
 		name = "Ladysnake Libs"
 		url = "https://ladysnake.jfrog.io/artifactory/mods"
 	}
+	maven {
+        name = "CottonMC"
+        url = "https://server.bbkr.space/artifactory/libs-release"
+    }
 }
 
 dependencies {
@@ -27,19 +31,15 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	// Uncomment the following line to enable the deprecated Fabric API modules. 
-	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
-
-	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
 	
-	modImplementation ("dev.emi:trinkets:3.4.0") {
+	modImplementation include("dev.emi:trinkets:3.4.0") {
 		exclude group: "com.terraformersmc", module: "modmenu"
 	}
 	
-	//modRuntime "com.terraformersmc:modmenu:4.0.6"
+	modImplementation include("io.github.cottonmc:LibGui:6.0.0+1.19")
+	
+	modRuntimeOnly "com.terraformersmc:modmenu:4.0.6"
 }
 
 processResources {

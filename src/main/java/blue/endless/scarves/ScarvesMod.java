@@ -12,7 +12,7 @@ public class ScarvesMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		
-		//ScarvesBlocks.register();
+		ScarvesBlocks.register();
 		ScarvesItems.register();
 	}
 
