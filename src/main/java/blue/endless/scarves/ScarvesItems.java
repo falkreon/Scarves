@@ -8,13 +8,17 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class ScarvesItems {
+	public static BlockItem SCARF_STAPLER;
+	public static BlockItem SCARF_TABLE;
+	
 	public static ScarfItem SCARF;
 	
 	
 	public static void register() {
-		SCARF = register( new ScarfItem(), "scarf" );
+		SCARF = register( new ScarfItem(), ScarfItem.ID );
 		
-		register(new BlockItem(ScarvesBlocks.SCARF_TABLE, new FabricItemSettings().rarity(Rarity.UNCOMMON)), ScarfTableBlock.ID);
+		SCARF_STAPLER = register(new BlockItem(ScarvesBlocks.SCARF_STAPLER, new FabricItemSettings().rarity(Rarity.UNCOMMON).group(ScarvesMod.ITEM_GROUP)) , ScarfStaplerBlock.ID);
+		SCARF_TABLE = register(new BlockItem(ScarvesBlocks.SCARF_TABLE, new FabricItemSettings().rarity(Rarity.UNCOMMON).group(ScarvesMod.ITEM_GROUP)), ScarfTableBlock.ID);
 	}
 	
 	private  static <T extends Item> T register(T item, String id) {

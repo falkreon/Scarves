@@ -3,29 +3,22 @@ package blue.endless.scarves.mixin;
 import java.util.stream.Stream;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 import com.mojang.authlib.GameProfile;
 
 import blue.endless.scarves.ScarvesItems;
-import blue.endless.scarves.ScarvesMod;
-import blue.endless.scarves.client.FabricSquare;
+import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.client.IScarfHaver;
 import blue.endless.scarves.client.ScarfAttachment;
 import blue.endless.scarves.client.ScarfNode;
 import blue.endless.scarves.client.SimpleScarfAttachment;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.stat.StatHandler;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(ClientPlayerEntity.class)
@@ -49,50 +42,52 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implemen
 				
 				//TODO: Update scarf attachment
 				if (scarves_leftScarf==null) {
-					scarves_leftScarf = new SimpleScarfAttachment();
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/white_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/lime_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/white_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/lime_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/white_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/lime_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/white_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/lime_wool"))
-							));
-					scarves_leftScarf.nodes().add(new ScarfNode(
-							this.getLerpedPos(delta),
-							FabricSquare.of(new Identifier("minecraft:block/white_wool"))
-							));
 					
+					scarves_leftScarf = new SimpleScarfAttachment();
+					for(int i=0; i<15; i++) {
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/white_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/lime_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/white_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/lime_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/white_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/lime_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/white_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/lime_wool")
+								));
+						scarves_leftScarf.nodes().add(new ScarfNode(
+								this.getLerpedPos(delta),
+								new FabricSquare("minecraft:block/lava_still").fullbright()
+								));
+					}
 				}
 				if (scarves_rightScarf==null) {
 					scarves_rightScarf = new SimpleScarfAttachment();
 				}
 				
-				Vec3d lookVec = Vec3d.fromPolar(getPitch(), getYaw());
+				//Vec3d lookVec = Vec3d.fromPolar(getPitch(), getYaw());
 				Vec3d planarLookVec = Vec3d.fromPolar(0, getYaw());
 				Vec3d upVec = new Vec3d(0, 1, 0);
 				Vec3d rightVec = planarLookVec.crossProduct(upVec);

@@ -1,5 +1,6 @@
 package blue.endless.scarves.client;
 
+import blue.endless.scarves.api.FabricSquare;
 import net.minecraft.util.math.Vec3d;
 
 public class ScarfNode {

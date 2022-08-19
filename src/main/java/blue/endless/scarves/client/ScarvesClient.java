@@ -2,44 +2,31 @@ package blue.endless.scarves.client;
 
 import java.util.List;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import blue.endless.scarves.ScarvesItems;
-import blue.endless.scarves.ScarvesMod;
-import dev.emi.trinkets.api.client.TrinketRendererRegistry;
+import blue.endless.scarves.ScarvesBlocks;
+import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
+import blue.endless.scarves.gui.ScarfTableGuiDescription;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.LightType;
 
 public class ScarvesClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		// TODO Auto-generated method stub
-		ScarvesMod.LOGGER.info("Client initialized ###############################");
+		//ScarvesMod.LOGGER.info("Client initialized ###############################");
 		//TrinketRendererRegistry.registerRenderer(ScarvesItems.SCARF, new ScarfTrinketRenderer());
 		
 		
 		WorldRenderEvents.BEFORE_ENTITIES.register(ScarvesClient::beforeEntities);
 		
+		HandledScreens.<ScarfStaplerGuiDescription, ScarfStaplerScreen>register(ScarvesBlocks.SCARF_STAPLER_SCREEN_HANDLER, (gui, inventory, title) -> new ScarfStaplerScreen(gui, inventory, title));
+		HandledScreens.<ScarfTableGuiDescription, ScarfTableScreen>register(ScarvesBlocks.SCARF_TABLE_SCREEN_HANDLER, (gui, inventory, title) -> new ScarfTableScreen(gui, inventory, title));
 	}
 	
 	
@@ -51,10 +38,10 @@ public class ScarvesClient implements ClientModInitializer {
 		ctx.matrixStack().translate(-pos.x, -pos.y, -pos.z);
 		
 		
-		BlockPos scarfPos = new BlockPos(0,0,0);
-		int blockLight = ctx.world().getLightLevel(LightType.BLOCK, scarfPos);
-		int skyLight = ctx.world().getLightLevel(LightType.SKY, scarfPos);
-		int light = LightmapTextureManager.pack(blockLight, skyLight);
+		//BlockPos scarfPos = new BlockPos(0,0,0);
+		//int blockLight = ctx.world().getLightLevel(LightType.BLOCK, scarfPos);
+		//int skyLight = ctx.world().getLightLevel(LightType.SKY, scarfPos);
+		//int light = LightmapTextureManager.pack(blockLight, skyLight);
 
 		
 		for(Entity entity : ctx.world().getEntities()) {
@@ -86,7 +73,6 @@ public class ScarvesClient implements ClientModInitializer {
 									ctx.world().getLightLevel(LightType.BLOCK, curPos),
 									ctx.world().getLightLevel(LightType.SKY, curPos)
 									);
-							if (cur.square.emissive())
 							
 							ScarfRenderer.quad(
 									prev,
@@ -106,10 +92,12 @@ public class ScarvesClient implements ClientModInitializer {
 					});
 				} catch (Throwable t) {
 					//TODO: Quietly flag the player with an error?
+					t.printStackTrace();
 				}
 			}
 		}
 		
+		/*
 		SpriteIdentifier spriteId = new SpriteIdentifier(new Identifier("minecraft", "stone"), PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 		RenderSystem.setShaderTexture(0, spriteId.getTextureId());
 		AbstractTexture tex = MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
@@ -149,7 +137,7 @@ public class ScarvesClient implements ClientModInitializer {
 				ctx.matrixStack(),
 				
 				0xFF_77FF77, light);
-		
+		*/
 		//buf.vertex(ctx.matrixStack().peek().getPositionMatrix(), 0, 0, 0).color(0xFF_FFFFFF).texture(1, 0).light(light).normal(0, 1, 0).next();
 		//buf.vertex(ctx.matrixStack().peek().getPositionMatrix(), 1, 0, 1).color(0xFF_FFFFFF).texture(0, 0).light(light).normal(0, 1, 0).next();
 		

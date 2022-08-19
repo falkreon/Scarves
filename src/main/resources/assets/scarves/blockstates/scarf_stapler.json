@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"facing=east": {
+			"model": "scarves:block/scarf_stapler",
+			"y": 90
+		},
+		"facing=north": {
+			"model": "scarves:block/scarf_stapler"
+		},
+		"facing=south": {
+			"model": "scarves:block/scarf_stapler",
+			"y": 180
+		},
+		"facing=west": {
+			"model": "scarves:block/scarf_stapler",
+			"y": 270
+		}
+	}
+}

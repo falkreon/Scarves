@@ -3,7 +3,7 @@
  * https://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-package blue.endless.scarves;
+package blue.endless.scarves.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;

@@ -28,19 +28,19 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ScarfTableBlock extends BlockWithEntity {
-	public static final String ID = "scarf_table";
+public class ScarfStaplerBlock extends BlockWithEntity {
+	public static final String ID = "scarf_stapler";
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final float PX = 1/16f;
 	private static final VoxelShape SHAPE = VoxelShapes.cuboid(2*PX, 0*PX, 2*PX, 14*PX, 16*PX, 14*PX);
 	
-	protected ScarfTableBlock() {
+	public ScarfStaplerBlock() {
 		super(FabricBlockSettings.copyOf(Blocks.CRAFTING_TABLE).resistance(8));
 	}
 	
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new ScarfTableBlockEntity(pos, state);
+		return new ScarfStaplerBlockEntity(pos, state);
 	}
 	
 	@Override
@@ -56,7 +56,7 @@ public class ScarfTableBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName() && world.getBlockEntity(pos) instanceof ScarfTableBlockEntity blockEntity) {
+		if (itemStack.hasCustomName() && world.getBlockEntity(pos) instanceof ScarfStaplerBlockEntity blockEntity) {
 			blockEntity.setCustomName(itemStack.getName());
 		}
 	}
@@ -68,7 +68,7 @@ public class ScarfTableBlock extends BlockWithEntity {
 			return;
 		}
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof ScarfTableBlockEntity table) {
+		if (blockEntity instanceof ScarfStaplerBlockEntity table) {
 			ItemScatterer.spawn(world, pos, table);
 			world.updateComparators(pos, this);
 		}
@@ -103,11 +103,6 @@ public class ScarfTableBlock extends BlockWithEntity {
 	@Override
 	protected void appendProperties(Builder<Block, BlockState> builder) {
 		builder.add(FACING);
-	}
-	
-	@Override
-	public boolean isCullingShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
-		return false;
 	}
 	
 	@Override

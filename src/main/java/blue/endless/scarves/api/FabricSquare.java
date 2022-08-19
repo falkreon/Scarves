@@ -1,27 +1,43 @@
-package blue.endless.scarves.client;
+package blue.endless.scarves.api;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.screen.PlayerScreenHandler;
+//import org.spongepowered.include.com.google.common.base.Preconditions;
+
 import net.minecraft.util.Identifier;
 
-public record FabricSquare(float uMin, float vMin, float uMax, float vMax, int color, boolean emissive) {
+public record FabricSquare(Identifier id, int xofs, int yofs, int color, boolean emissive) {
+	
+	public FabricSquare(String id) {
+		this(new Identifier(id), 4, 4, 0xFF_FFFFFF, false);
+	}
 	
 	/**
 	 * Creates a fabric square of the specified block/item on the block atlas texture, and uses the middle 8x8
 	 * @param id a texture id, such as "block/white_wool"
 	 * @return a fabric square representing the middle 8x8 with no tint.
 	 */
-	public static FabricSquare of(Identifier id) {
-		return FabricSquare.of(id, 4, 4, 0xFF_FFFFFF, false);
+	public FabricSquare(Identifier id) {
+		this(id, 4, 4, 0xFF_FFFFFF, false);
 	}
 	
-	public static FabricSquare of(Identifier id, int color) {
-		return FabricSquare.of(id, 4, 4, color, false);
+	public FabricSquare(Identifier id, int color) {
+		this(id, 4, 4, color, false);
 	}
 	
+	public FabricSquare fullbright() {
+		return new FabricSquare(id, xofs, yofs, color, true);
+	}
+	
+	public FabricSquare withColor(int color) {
+		return new FabricSquare(id, xofs, yofs, color, emissive);
+	}
+	
+	public FabricSquare withOffset(int xofs, int yofs) {
+		//Preconditions.checkArgument(xofs>=0 && yofs>=0, "Negative offsets are not allowed, because they will spill over onto other textures.");
+		//Preconditions.checkArgument(xofs<8 && yofs<8, "Offsets of more than 7 are not allowed, because they will spill over onto other textures.");
+		return new FabricSquare(id, xofs, yofs, color, emissive);
+	}
+	
+	/*
 	public static FabricSquare of(Identifier id, int xofs, int yofs, int color, boolean emissive) {
 		AbstractTexture tex = MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 		if (tex instanceof SpriteAtlasTexture atlas) {
@@ -41,5 +57,5 @@ public record FabricSquare(float uMin, float vMin, float uMax, float vMax, int c
 		} else {
 			throw new IllegalStateException("Somehow the Block Atlas texture is not an atlas (found "+tex.getClass().getCanonicalName()+")");
 		}
-	}
+	}*/
 }
