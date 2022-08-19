@@ -1,8 +1,9 @@
 package blue.endless.scarves;
 
+import blue.endless.scarves.api.FabricSquare;
+import blue.endless.scarves.api.FabricSquareRegistry;
 import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
 import blue.endless.scarves.util.ImplementedInventory;
-import io.github.cottonmc.cotton.gui.PropertyDelegateHolder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,8 +11,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.Text;
@@ -64,5 +66,29 @@ public class ScarfStaplerBlockEntity extends BlockEntity implements ImplementedI
 	@Override
 	public Text getDisplayName() {
 		return Text.translatable(getCachedState().getBlock().getTranslationKey());
+	}
+	
+	public void staple() {
+		ItemStack toStapleLeft = this.removeStack(LEFT_SLOT, 1);
+		ItemStack toStapleRight = this.removeStack(RIGHT_SLOT, 1);
+		ItemStack scarf = this.getStack(SCARF_SLOT);
+		
+		NbtCompound tag = scarf.getOrCreateNbt();
+		
+		if (toStapleLeft!=ItemStack.EMPTY) {
+			FabricSquare toAdd = FabricSquareRegistry.forItem(toStapleLeft);
+			NbtList squares = tag.getList("LeftScarf", NbtElement.COMPOUND_TYPE);
+			squares.add(toAdd.toCompound());
+			tag.put("LeftScarf", squares);
+		}
+		
+		if (toStapleRight!=ItemStack.EMPTY) {
+			FabricSquare toAdd = FabricSquareRegistry.forItem(toStapleRight);
+			NbtList squares = tag.getList("RightScarf", NbtElement.COMPOUND_TYPE);
+			squares.add(toAdd.toCompound());
+			tag.put("RightScarf", squares);
+		}
+		
+		this.setStack(SCARF_SLOT, scarf);
 	}
 }

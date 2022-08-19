@@ -1,5 +1,8 @@
 package blue.endless.scarves.api;
 
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+
 //import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import net.minecraft.util.Identifier;
@@ -58,4 +61,25 @@ public record FabricSquare(Identifier id, int xofs, int yofs, int color, boolean
 			throw new IllegalStateException("Somehow the Block Atlas texture is not an atlas (found "+tex.getClass().getCanonicalName()+")");
 		}
 	}*/
+	
+	public NbtCompound toCompound() {
+		NbtCompound result = new NbtCompound();
+		result.putString("Id", id.toString());
+		result.putInt("X", xofs);
+		result.putInt("Y", yofs);
+		result.putInt("Color", color);
+		result.putBoolean("Emissive", emissive);
+		
+		return result;
+	}
+	
+	public static FabricSquare fromCompound(NbtCompound tag) {
+		String id = tag.getString("Id");
+		int xofs = (tag.contains("X", NbtElement.INT_TYPE)) ? tag.getInt("X") : 4;
+		int yofs = (tag.contains("Y", NbtElement.INT_TYPE)) ? tag.getInt("Y") : 4;
+		int color = (tag.contains("Color", NbtElement.INT_TYPE)) ? tag.getInt("Color") : 0xFF_FFFFFF;
+		boolean emissive = tag.getBoolean("Emissive");
+		
+		return new FabricSquare(new Identifier(id), xofs, yofs, color, emissive);
+	}
 }

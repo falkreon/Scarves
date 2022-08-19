@@ -20,26 +20,26 @@ public class FabricSquareRegistry {
 	private static Map<ItemConvertible, FabricSquare> entries = new HashMap<>();
 	
 	static {
-		register(Blocks.WHITE_WOOL,      "minecraft:white_wool");
-		register(Blocks.ORANGE_WOOL,     "minecraft:orange_wool");
-		register(Blocks.MAGENTA_WOOL,    "minecraft:magenta_wool");
-		register(Blocks.LIGHT_BLUE_WOOL, "minecraft:light_blue_wool");
-		register(Blocks.YELLOW_WOOL,     "minecraft:yellow_wool");
-		register(Blocks.LIME_WOOL,       "minecraft:lime_wool");
-		register(Blocks.PINK_WOOL,       "minecraft:pink_wool");
-		register(Blocks.GRAY_WOOL,       "minecraft:gray_wool");
-		register(Blocks.LIGHT_GRAY_WOOL, "minecraft:light_gray_wool");
-		register(Blocks.CYAN_WOOL,       "minecraft:cyan_wool");
-		register(Blocks.PURPLE_WOOL,     "minecraft:purple_wool");
-		register(Blocks.BLUE_WOOL,       "minecraft:blue_wool");
-		register(Blocks.BROWN_WOOL,      "minecraft:brown_wool");
-		register(Blocks.GREEN_WOOL,      "minecraft:green_wool");
-		register(Blocks.RED_WOOL,        "minecraft:red_wool");
-		register(Blocks.BLACK_WOOL,      "minecraft:black_wool");
+		register(Blocks.WHITE_WOOL,      "minecraft:block/white_wool");
+		register(Blocks.ORANGE_WOOL,     "minecraft:block/orange_wool");
+		register(Blocks.MAGENTA_WOOL,    "minecraft:block/magenta_wool");
+		register(Blocks.LIGHT_BLUE_WOOL, "minecraft:block/light_blue_wool");
+		register(Blocks.YELLOW_WOOL,     "minecraft:block/yellow_wool");
+		register(Blocks.LIME_WOOL,       "minecraft:block/lime_wool");
+		register(Blocks.PINK_WOOL,       "minecraft:block/pink_wool");
+		register(Blocks.GRAY_WOOL,       "minecraft:block/gray_wool");
+		register(Blocks.LIGHT_GRAY_WOOL, "minecraft:block/light_gray_wool");
+		register(Blocks.CYAN_WOOL,       "minecraft:block/cyan_wool");
+		register(Blocks.PURPLE_WOOL,     "minecraft:block/purple_wool");
+		register(Blocks.BLUE_WOOL,       "minecraft:block/blue_wool");
+		register(Blocks.BROWN_WOOL,      "minecraft:block/brown_wool");
+		register(Blocks.GREEN_WOOL,      "minecraft:block/green_wool");
+		register(Blocks.RED_WOOL,        "minecraft:block/red_wool");
+		register(Blocks.BLACK_WOOL,      "minecraft:block/black_wool");
 		
-		register(Blocks.GLOWSTONE,       "minecraft:glowstone");
-		register(Items.LAVA_BUCKET,      new FabricSquare(new Identifier("minecraft:lava"), 4, 4, 0xFF_FFFFFF, true));
-		register(Items.WATER_BUCKET,     new FabricSquare("minecraft:water"));
+		register(Blocks.GLOWSTONE,       "minecraft:block/glowstone");
+		register(Items.LAVA_BUCKET,      new FabricSquare(new Identifier("minecraft:block/lava_still"), 4, 4, 0xFF_FFFFFF, true));
+		register(Items.WATER_BUCKET,     new FabricSquare(new Identifier("minecraft:block/water_still"), 4, 4, 0xFF_4444FF, false));
 	}
 	
 	public static void register(ItemConvertible item, FabricSquare square) {
@@ -91,13 +91,7 @@ public class FabricSquareRegistry {
 	public static @Nullable FabricSquare forItem(ItemStack stack) {
 		NbtCompound tag = stack.getSubNbt("FabricSquare");
 		if (tag!=null) {
-			String id = tag.getString("Id");
-			int xofs = (tag.contains("X", NbtElement.INT_TYPE)) ? tag.getInt("X") : 4;
-			int yofs = (tag.contains("Y", NbtElement.INT_TYPE)) ? tag.getInt("Y") : 4;
-			int color = (tag.contains("Color", NbtElement.INT_TYPE)) ? tag.getInt("Color") : 0xFF_FFFFFF;
-			boolean emissive = tag.getBoolean("Emissive");
-			
-			return new FabricSquare(new Identifier(id), xofs, yofs, color, emissive);
+			return FabricSquare.fromCompound(tag);
 		}
 		
 		Item item = stack.getItem();

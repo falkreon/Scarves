@@ -1,9 +1,8 @@
 {
-	"language.name": "English",
-	"language.region": "United States",
-	"language.code": "en_us",
+	
 	"block.scarves.scarf_table": "Scarf Serger",
 	"block.scarves.scarf_stapler": "Scarf Stapler",
 	"item.scarves.scarf": "Scarf",
-	"trinkets.slot.chest.scarf": "Scarf"
+	"trinkets.slot.chest.scarf": "Scarf",
+	"gui.scarves.staple": "Staple"
 }

@@ -16,12 +16,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 public class ScarvesClient implements ClientModInitializer {
-
+	public static final double SCARF_GRAVITY = -0.0025;
+	
 	@Override
 	public void onInitializeClient() {
-		//ScarvesMod.LOGGER.info("Client initialized ###############################");
-		//TrinketRendererRegistry.registerRenderer(ScarvesItems.SCARF, new ScarfTrinketRenderer());
-		
 		
 		WorldRenderEvents.BEFORE_ENTITIES.register(ScarvesClient::beforeEntities);
 		

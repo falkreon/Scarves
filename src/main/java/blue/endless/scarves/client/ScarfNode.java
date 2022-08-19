@@ -24,4 +24,16 @@ public class ScarfNode {
 			position = newPosition;
 		}
 	}
+
+	public Vec3d getPosition() {
+		return position;
+	}
+	
+	public void setPosition(Vec3d pos) {
+		position = pos;
+	}
+	
+	public void setSquare(FabricSquare square) {
+		this.square = square;
+	}
 }
