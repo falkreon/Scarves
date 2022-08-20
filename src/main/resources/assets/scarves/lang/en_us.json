@@ -4,6 +4,7 @@
 	"block.scarves.scarf_stapler": "Scarf Stapler",
 	"item.scarves.scarf": "Scarf",
 	"trinkets.slot.chest.scarf": "Scarf",
+	"tag.trinkets.slot.chest.scarf": "Scarves",
 	"gui.scarves.staple": "Staple",
 	
 	"item.scarves.scarf.named" : "%s Scarf",

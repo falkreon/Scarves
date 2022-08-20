@@ -3,6 +3,7 @@
     "block.scarves.scarf_stapler": "Grapadora de bufandas",
     "item.scarves.scarf": "Bufanda",
     "trinkets.slot.chest.scarf": "Bufanda",
+    "tag.trinkets.slot.chest.scarf": "Bufandas",
     "gui.scarves.staple": "Engrapar",
     
     "item.scarves.scarf.named" : "Bufanda %s",

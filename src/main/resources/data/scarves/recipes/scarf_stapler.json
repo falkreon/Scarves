@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "scarf_stapler",
+  "key": {
+    ",": {
+      "item": "minecraft:iron_nugget"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "-": {
+      "item": "minecraft:stone_slab"
+    },
+    "/": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "III",
+    "/ ,",
+    "---"
+  ],
+  "result": {
+    "count": 1,
+    "item": "scarves:scarf_stapler"
+  }
+}

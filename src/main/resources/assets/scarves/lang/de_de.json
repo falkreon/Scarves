@@ -3,6 +3,7 @@
     "block.scarves.scarf_stapler": "Schalhefter",
     "item.scarves.scarf": "Schal",
     "trinkets.slot.chest.scarf": "Schal",
+    "tag.trinkets.slot.chest.scarf": "Schals",
     "gui.scarves.staple": "Zusammenheften",
     
     "item.scarves.scarf.named" : "%s Schal",

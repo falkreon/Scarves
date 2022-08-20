@@ -39,6 +39,11 @@ public class ScarfItem extends TrinketItem {
 				
 				stacks.add(setName(scarf, name));
 			}
+			
+			ItemStack biPanScarf = createScarf(PrideFlags.getFlag("bisexual"), 30, PrideFlags.getFlag("pansexual"), 15);
+			Text biPanName = Text.literal(StringUtils.capitalize("Bi/Pan"));
+			Text name = Text.translatable("item.scarves.scarf.named", biPanName);
+			stacks.add(setName(biPanScarf, name));
 		}
 	}
 	

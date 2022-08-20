@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "scarf",
+  "key": {
+    "W": {
+      "item": "minecraft:white_wool"
+    }
+  },
+  "pattern": [
+    " W ",
+    "W W",
+    " W "
+  ],
+  "result": {
+    "item": "scarves:scarf"
+  }
+} 
