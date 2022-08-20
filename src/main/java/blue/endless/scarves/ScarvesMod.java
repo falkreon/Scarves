@@ -17,10 +17,14 @@ public class ScarvesMod implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
-		ITEM_GROUP = FabricItemGroupBuilder.build(
-				new Identifier(MODID, "general"),
-				()->new ItemStack(ScarvesItems.SCARF_TABLE)
-			);
+		ITEM_GROUP = FabricItemGroupBuilder
+			.create(new Identifier(MODID, "general"))
+			
+			.build();
+			//.build(
+			//	new Identifier(MODID, "general"),
+			//	()->new ItemStack(ScarvesItems.SCARF_TABLE)
+			//);
 		
 		
 		ScarvesBlocks.register();

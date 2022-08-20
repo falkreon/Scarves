@@ -1,8 +1,18 @@
 {
-	
 	"block.scarves.scarf_table": "Scarf Serger",
 	"block.scarves.scarf_stapler": "Scarf Stapler",
 	"item.scarves.scarf": "Scarf",
 	"trinkets.slot.chest.scarf": "Scarf",
-	"gui.scarves.staple": "Staple"
+	"gui.scarves.staple": "Staple",
+	
+	"item.scarves.scarf.named" : "%s Scarf",
+	
+	"flag.pridelib.asexual":  "Asexual",
+	"flag.pridelib.bisexual": "Bisexual",
+	"flag.pridelib.intersex": "Intersex",
+	"flag.pridelib.lesbian":  "Lesbian",
+	"flag.pridelib.nonbinary":"Nonbinary",
+	"flag.pridelib.pansexual":"Pansexual",
+	"flag.pridelib.rainbow":  "Rainbow",
+	"flag.pridelib.transgender":"Transgender"
 }
