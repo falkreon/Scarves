@@ -1,6 +1,7 @@
 {
 	"textures": {
-		"1": "scarves:block/scarf_stapler_body"
+		"1": "scarves:block/scarf_stapler_body",
+		"particle": "scarves:block/scarf_stapler_body"
 	},
 	"elements": [
 		{
@@ -78,6 +79,42 @@
 			}
 		}
 	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 225, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"head": {
+			"translation": [0, 1.75, 0],
+			"scale": [1.37, 1.37, 1.37]
+		},
+		"fixed": {
+			"translation": [0, 0, -2],
+			"scale": [0.75, 0.75, 0.75]
+		}
+	},
 	"groups": [
 		0,
 		1,

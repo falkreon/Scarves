@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Wearable;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager.Builder;
 import net.minecraft.state.property.DirectionProperty;
@@ -30,7 +31,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ScarfStaplerBlock extends BlockWithEntity {
+public class ScarfStaplerBlock extends BlockWithEntity implements Wearable {
 	public static final String ID = "scarf_stapler";
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final float PX = 1/16f;
@@ -111,4 +112,6 @@ public class ScarfStaplerBlock extends BlockWithEntity {
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
+	
+	
 }

@@ -12,6 +12,7 @@ import com.mojang.authlib.GameProfile;
 
 import blue.endless.scarves.ScarvesItems;
 import blue.endless.scarves.api.FabricSquare;
+import blue.endless.scarves.api.ScarfLogic;
 import blue.endless.scarves.client.IScarfHaver;
 import blue.endless.scarves.client.ScarfAttachment;
 import blue.endless.scarves.client.ScarfNode;
@@ -21,6 +22,7 @@ import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -113,40 +115,14 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 					NbtList leftScarfTag = tag.getList("LeftScarf", NbtElement.COMPOUND_TYPE);
 					if (leftScarfTag!=null) {
 						if (scarves_leftScarf==null) scarves_leftScarf = new SimpleScarfAttachment();
-						scarves_updateScarfAttachment(leftScarfTag, scarves_leftScarf);
+						ScarfLogic.updateScarfAttachment(scarves_leftScarf, this.world, (Entity)(Object)this, this.getPos(), leftScarfTag);
 					}
 					
 					NbtList rightScarfTag = tag.getList("RightScarf", NbtElement.COMPOUND_TYPE);
 					if (rightScarfTag!=null) {
 						if (scarves_rightScarf==null) scarves_rightScarf = new SimpleScarfAttachment();
-						scarves_updateScarfAttachment(rightScarfTag, scarves_rightScarf);
+						ScarfLogic.updateScarfAttachment(scarves_rightScarf, this.world, (Entity)(Object)this, this.getPos(), rightScarfTag);
 					}
-				}
-			}
-		}
-	}
-	
-	private void scarves_updateScarfAttachment(NbtList data, ScarfAttachment attachment) {
-		List<ScarfNode> nodes = attachment.nodes();
-		while(nodes.size()>data.size()) nodes.remove(nodes.size()-1);
-		
-		Vec3d lastPos = this.getPos();
-		for(int i=0; i<data.size(); i++) {
-			FabricSquare square = FabricSquare.fromCompound(data.getCompound(i));
-			if (nodes.size()<=i) {
-				ScarfNode node = new ScarfNode(lastPos, square);
-				nodes.add(node);
-			} else {
-				nodes.get(i).setSquare(square);
-				lastPos = nodes.get(i).getPosition();
-			}
-			
-			ScarfNode node = nodes.get(i);
-			Vec3d prospectivePosition = node.getPosition().add(0, ScarvesClient.SCARF_GRAVITY, 0);
-			BlockPos blockInThatPosition = new BlockPos(prospectivePosition);
-			if (this.world!=null) {
-				if (!this.world.isTopSolid(blockInThatPosition, this)) {
-					node.setPosition(prospectivePosition);
 				}
 			}
 		}
