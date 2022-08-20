@@ -19,9 +19,10 @@ import blue.endless.scarves.client.ScarvesClient;
 import blue.endless.scarves.client.SimpleScarfAttachment;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -29,14 +30,19 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
-@Mixin(ClientPlayerEntity.class)
-public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implements IScarfHaver {
+@Mixin({ClientPlayerEntity.class, OtherClientPlayerEntity.class})
+public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IScarfHaver {
+
+	public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile,
+			PlayerPublicKey publicKey) {
+		super(world, pos, yaw, gameProfile, publicKey);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final float SCARF_TAIL_SEPARATION = 0.19f;
 
-	public ClientPlayerEntityMixin(ClientWorld world, GameProfile profile, PlayerPublicKey publicKey) {
-		super(world, profile, publicKey);
-	}
 
 	private SimpleScarfAttachment scarves_leftScarf;
 	private SimpleScarfAttachment scarves_rightScarf;
@@ -46,54 +52,12 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implemen
 	@Override
 	public Stream<ScarfAttachment> iScarfHaver_getAttachments(float delta) {
 		
-		TrinketComponent component = TrinketsApi.getTrinketComponent((ClientPlayerEntity)(Object) this).orElse(null);
+		TrinketComponent component = TrinketsApi.getTrinketComponent((LivingEntity)(Object) this).orElse(null);
 		if (component !=null) {
 			for(var equipped : component.getEquipped(ScarvesItems.SCARF)) {
-				ItemStack stack = equipped.getRight();
 				
-				//TODO: Update scarf attachment
 				if (scarves_leftScarf==null) {
-					
 					scarves_leftScarf = new SimpleScarfAttachment();
-					/*
-					for(int i=0; i<15; i++) {
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/white_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/lime_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/white_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/lime_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/white_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/lime_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/white_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/lime_wool")
-								));
-						scarves_leftScarf.nodes().add(new ScarfNode(
-								this.getLerpedPos(delta),
-								new FabricSquare("minecraft:block/lava_still").fullbright()
-								));
-					}*/
 				}
 				if (scarves_rightScarf==null) {
 					scarves_rightScarf = new SimpleScarfAttachment();
@@ -134,7 +98,7 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implemen
 	}
 	
 	private void scarves_updateScarfAttachments() {
-		TrinketComponent component = TrinketsApi.getTrinketComponent((ClientPlayerEntity)(Object) this).orElse(null);
+		TrinketComponent component = TrinketsApi.getTrinketComponent((LivingEntity)(Object) this).orElse(null);
 		if (component !=null) {
 			for(var equipped : component.getEquipped(ScarvesItems.SCARF)) {
 				ItemStack stack = equipped.getRight();
