@@ -49,7 +49,7 @@ public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
 		stapleButton.setOnClick(()->{
 			ScreenNetworking.of(this, NetworkSide.CLIENT).send(STAPLE_MESSAGE, buf->{});
 		});
-		root.add(stapleButton, 3, 3, 3, 1);
+		root.add(stapleButton, 2, 3, 5, 1);
 
 		root.add(this.createPlayerInventoryPanel(), 0, 5);
 

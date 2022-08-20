@@ -1,0 +1,18 @@
+{
+    "block.scarves.scarf_table": "Mesa de coser",
+    "block.scarves.scarf_stapler": "Grapadora de bufandas",
+    "item.scarves.scarf": "Bufanda",
+    "trinkets.slot.chest.scarf": "Bufanda",
+    "gui.scarves.staple": "Engrapar",
+    
+    "item.scarves.scarf.named" : "Bufanda %s",
+    
+    "flag.pridelib.asexual":  "asexual",
+    "flag.pridelib.bisexual": "bisexual",
+    "flag.pridelib.intersex": "intersexual",
+    "flag.pridelib.lesbian":  "lesbiana",
+    "flag.pridelib.nonbinary":"nonbinaria",
+    "flag.pridelib.pansexual":"pansexual",
+    "flag.pridelib.rainbow":  "de la arcoíris",
+    "flag.pridelib.transgender":"transgénero"
+}

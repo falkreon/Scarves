@@ -1,0 +1,18 @@
+{
+    "block.scarves.scarf_table": "Schalschneidemaschine",
+    "block.scarves.scarf_stapler": "Schalhefter",
+    "item.scarves.scarf": "Schal",
+    "trinkets.slot.chest.scarf": "Schal",
+    "gui.scarves.staple": "Zusammenheften",
+    
+    "item.scarves.scarf.named" : "%s Schal",
+    
+    "flag.pridelib.asexual":  "Asexuell",
+    "flag.pridelib.bisexual": "Bisexuell",
+    "flag.pridelib.intersex": "Intersexuell",
+    "flag.pridelib.lesbian":  "Lesbisch",
+    "flag.pridelib.nonbinary":"Nichtbinär",
+    "flag.pridelib.pansexual":"Pansexuell",
+    "flag.pridelib.rainbow":  "Regenbogen",
+    "flag.pridelib.transgender":"Transgender"
+}
