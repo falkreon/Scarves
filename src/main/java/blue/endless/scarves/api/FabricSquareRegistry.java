@@ -13,7 +13,6 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 
 public class FabricSquareRegistry {
@@ -42,6 +41,16 @@ public class FabricSquareRegistry {
 		register(Items.WATER_BUCKET,     new FabricSquare(new Identifier("minecraft:block/water_still"), 4, 4, 0xFF_4444FF, false));
 	}
 	
+	/**
+	 * Registers a block or item for use with the Scarf Stapler. Using a FabricSquare gives you full control over the
+	 * visual characteristics of that part of the scarf.
+	 * 
+	 * <p>Note: If the item's visual characteristics depend on NBT, consider supplying a FabricSquare NBT key instead. If
+	 * you're just registering a block and want to use the middle of its texture, use {@link #register(Block, Identifier)}
+	 * instead.
+	 * @param item the item to register
+	 * @param square the fabric square
+	 */
 	public static void register(ItemConvertible item, FabricSquare square) {
 		
 		entries.remove(item);
@@ -60,6 +69,11 @@ public class FabricSquareRegistry {
 		}
 	}
 	
+	/**
+	 * Registers a block for use with the Scarf Stapler. The center 8x8 pixels will be used.
+	 * @param block	The block to register
+	 * @param texture The identifier of the texture to use. This is usually the same identifier as the texture reference in the blockmodel, e.g. "minecraft:block/glowstone"
+	 */
 	public static void register(Block block, Identifier texture) {
 		if (block.getDefaultState().getLuminance()>=8) {
 			entries.put(block, new FabricSquare(texture, 4, 4, 0xFF_FFFFFF, true));

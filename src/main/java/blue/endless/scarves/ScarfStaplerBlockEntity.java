@@ -73,6 +73,9 @@ public class ScarfStaplerBlockEntity extends BlockEntity implements ImplementedI
 		ItemStack toStapleRight = this.removeStack(RIGHT_SLOT, 1);
 		ItemStack scarf = this.getStack(SCARF_SLOT);
 		
+		if (scarf.isEmpty()) return;
+		if (toStapleLeft.isEmpty() && toStapleRight.isEmpty()) return;
+		
 		NbtCompound tag = scarf.getOrCreateNbt();
 		
 		if (toStapleLeft!=ItemStack.EMPTY) {
