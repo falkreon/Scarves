@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 public class ScarvesClient implements ClientModInitializer {
-	public static final double SCARF_GRAVITY = -0.0025;
+	public static final double SCARF_GRAVITY = -0.005;
 	
 	@Override
 	public void onInitializeClient() {
