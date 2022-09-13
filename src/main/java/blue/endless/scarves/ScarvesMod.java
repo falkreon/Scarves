@@ -24,11 +24,6 @@ public class ScarvesMod implements ModInitializer {
 			.create(new Identifier(MODID, "general"))
 			.icon(()->new ItemStack(ScarvesItems.SCARF))
 			.build();
-			//.build(
-			//	new Identifier(MODID, "general"),
-			//	()->new ItemStack(ScarvesItems.SCARF_TABLE)
-			//);
-		
 		
 		ScarvesBlocks.register();
 		ScarvesItems.register();

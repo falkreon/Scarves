@@ -46,7 +46,7 @@ public class ScarvesClient implements ClientModInitializer {
 			if (entity instanceof IScarfHaver scarfHaver) {
 				try {
 					scarfHaver.iScarfHaver_getAttachments(ctx.tickDelta()).forEach( it-> {
-						//Physics
+						//Physics - gravity and collisions run on the tick thread
 						List<ScarfNode> nodes = it.nodes();
 						if (nodes.isEmpty()) return;
 						nodes.get(0).pullTowards(it.getLocation());
@@ -56,14 +56,18 @@ public class ScarvesClient implements ClientModInitializer {
 							cur.pullTowards(prev.position);
 						}
 						
-						//TODO: Gravity, floor collisions
-						
 						//Rendering
 						Vec3d prev = it.getLocation();
+						Vec3d prevUp = new Vec3d(0,1,0).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
 						for(int i=0; i<nodes.size(); i++) {
 							ScarfNode cur = nodes.get(i);
 							
 							BlockPos curPos = new BlockPos(cur.position.add(0,0.25,0));
+							Vec3d forwardVec = cur.position.subtract(prev).normalize();
+							Vec3d tempUpVec = (forwardVec.x==0&&forwardVec.z==0) ? new Vec3d(1,0,0) : new Vec3d(0,1,0);
+							Vec3d rightVec = forwardVec.crossProduct(tempUpVec);
+							Vec3d curUp = forwardVec.crossProduct(rightVec).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
+							
 							int nodeLight = (cur.square.emissive()) ?
 									LightmapTextureManager.pack(15,15) :
 									
@@ -74,8 +78,10 @@ public class ScarvesClient implements ClientModInitializer {
 							
 							ScarfRenderer.quad(
 									prev,
-									prev.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
-									cur.position.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
+									prev.add(prevUp),
+									//prev.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
+									//cur.position.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
+									cur.position.add(curUp),
 									cur.position,
 									
 									cur.square,
@@ -86,6 +92,7 @@ public class ScarvesClient implements ClientModInitializer {
 									);
 							
 							prev = cur.position;
+							prevUp = curUp;
 						}
 					});
 				} catch (Throwable t) {
@@ -94,52 +101,6 @@ public class ScarvesClient implements ClientModInitializer {
 				}
 			}
 		}
-		
-		/*
-		SpriteIdentifier spriteId = new SpriteIdentifier(new Identifier("minecraft", "stone"), PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-		RenderSystem.setShaderTexture(0, spriteId.getTextureId());
-		AbstractTexture tex = MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-		
-		float minU = 0;
-		float minV = 0;
-		float maxU = 0.5f;
-		float maxV = 0.5f;
-		
-		float pxX = (maxU-minU) / 16.0f;
-		float pxY = (maxV-minV) / 16.0f;
-		
-		if (tex instanceof SpriteAtlasTexture atlas) {
-			Sprite sprite = atlas.getSprite(new Identifier("minecraft", "block/white_wool"));
-			if (sprite!=null) {
-				minU = sprite.getMinU();// + (4*pxX);
-				minV = sprite.getMinV();// + (4*pxY);
-				maxU = sprite.getMaxU();// - (4*pxX);
-				maxV = sprite.getMaxV();// - (4*pxY);
-			} //sprite will never be null
-		}
-		
-		ScarfRenderer.quad(
-				new Vec3d(0  , 0  , 0  ),
-				new Vec3d(0  , 0.5, 0  ),
-				new Vec3d(0.5, 0.5, 0  ),
-				new Vec3d(0.5, 0  , 0  ),
-				
-				new Vec2f(minU, minV),
-				new Vec2f(minU, maxV),
-				new Vec2f(maxU, maxV),
-				new Vec2f(maxU, minV),
-				
-				true,
-				
-				ctx.consumers(),
-				ctx.matrixStack(),
-				
-				0xFF_77FF77, light);
-		*/
-		//buf.vertex(ctx.matrixStack().peek().getPositionMatrix(), 0, 0, 0).color(0xFF_FFFFFF).texture(1, 0).light(light).normal(0, 1, 0).next();
-		//buf.vertex(ctx.matrixStack().peek().getPositionMatrix(), 1, 0, 1).color(0xFF_FFFFFF).texture(0, 0).light(light).normal(0, 1, 0).next();
-		
-		
 		
 		ctx.matrixStack().pop();
 	}

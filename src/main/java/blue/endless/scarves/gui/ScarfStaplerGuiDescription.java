@@ -38,11 +38,11 @@ public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
 		root.add(itemSlot, 4, 2);
 		
 		WItemSlot leftSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.LEFT_SLOT);
-		leftSlot.setFilter(FabricSquareRegistry::isFabricSquare);
+		leftSlot.setFilter(FabricSquareRegistry::canBeStapled);
 		root.add(leftSlot, 2, 2);
 		
 		WItemSlot rightSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.RIGHT_SLOT);
-		rightSlot.setFilter(FabricSquareRegistry::isFabricSquare);
+		rightSlot.setFilter(FabricSquareRegistry::canBeStapled);
 		root.add(rightSlot, 6, 2);
 		
 		WButton stapleButton = new WButton(Text.translatable("gui.scarves.staple"));

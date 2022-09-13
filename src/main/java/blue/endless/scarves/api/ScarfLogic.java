@@ -33,7 +33,7 @@ public class ScarfLogic {
 			
 			ScarfNode node = nodes.get(i);
 			Vec3d prospectivePosition = node.getPosition().add(0, ScarvesClient.SCARF_GRAVITY, 0);
-			BlockPos blockInThatPosition = new BlockPos(prospectivePosition);
+			BlockPos blockInThatPosition = new BlockPos(prospectivePosition.add(0,-ScarfNode.FABRIC_SQUARE_WIDTH,0));
 			if (world!=null) {
 				if (!world.isTopSolid(blockInThatPosition, entity)) {
 					node.setPosition(prospectivePosition);

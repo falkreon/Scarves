@@ -42,32 +42,11 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 
 	private static final float SCARF_TAIL_SEPARATION = 0.19f;
 
-
 	private SimpleScarfAttachment scarves_leftScarf;
 	private SimpleScarfAttachment scarves_rightScarf;
 	
-	
-	
 	@Override
 	public Stream<ScarfAttachment> iScarfHaver_getAttachments(float delta) {
-		
-		//TEMP FIGURE OUT ATTACHMENT POINT INFO
-		float bodyYaw = MathHelper.lerpAngleDegrees(delta, this.prevBodyYaw, this.bodyYaw);
-		float headYaw = MathHelper.lerpAngleDegrees(delta, this.prevHeadYaw, this.headYaw);
-		float pitch = MathHelper.lerp(delta, this.prevPitch, this.getPitch());
-		
-		
-		
-		Vec3d pos = this.getLerpedPos(delta);
-		/*
-		EntityRenderer<?> renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(this);
-		if (renderer instanceof PlayerEntityRenderer playerRender) {
-			PlayerEntityModel<AbstractClientPlayerEntity> model = playerRender.getModel();
-			scarves_updatePlayerEntityModel(model);
-			ModelPart head = model.getHead();
-			System.out.println(head.yaw+" / "+head.pitch);
-		}*/
-		//END FIGURE OUT ATTACHMENT POINT INFO
 		
 		TrinketComponent component = TrinketsApi.getTrinketComponent((LivingEntity)(Object) this).orElse(null);
 		if (component !=null) {
@@ -80,7 +59,6 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 					scarves_rightScarf = new SimpleScarfAttachment();
 				}
 				
-				//Vec3d lookVec = Vec3d.fromPolar(getPitch(), getYaw());
 				Vec3d planarLookVec = Vec3d.fromPolar(0, getYaw());
 				Vec3d upVec = new Vec3d(0, 1, 0);
 				Vec3d rightVec = planarLookVec.crossProduct(upVec);
@@ -99,25 +77,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 						referencePos = referencePos.add(lookVec.multiply(0.7)).add(0, 0.25, 0);
 					}
 				}
-				//double posedEyeHeight = this.getEyeHeight(getPose()) - 0.4;
-				//Vec3d referencePos = new Vec3d(0, posedEyeHeight, 0);
-				//referencePos = referencePos.rotateX(this.getLeaningPitch(delta));
-				
-				
-				
-				//TODO: I THINK I CRACKED IT
-				// Use getLeaningPitch to get our body pitch, and rotate the referencePos vector to get our new base head location.
-				// Then displace relative to *that*. It may be that we don't even want to use the crouching/fallflying pose, just
-				// the standing one.
-				
-				//TODO: This is not working at *all*.
-				//if (isFallFlying() || isInSwimmingPose()) {
-				//	ScarvesMod.LOGGER.info("Translating for pose "+this.getPose()+" by "+planarLookVec);
-				//	referencePos = referencePos.rotateX((float) (0.25*Math.PI));
-				//	//TODO: Translate forward
-				//}
-				
-				//TODO: Attach to shoulders
+
 				scarves_leftScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
 				scarves_rightScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
 				
@@ -188,59 +148,4 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 		}
 		return result;
 	}
-	
-	/*
-	private void scarves_updatePlayerEntityModel(PlayerEntityModel<AbstractClientPlayerEntity> model) {
-		float tickDelta = 0f;
-		model.handSwingProgress = this.getHandSwingProgress(tickDelta);
-		model.riding = this.hasVehicle();
-		model.child = this.isBaby();
-		float bodyYaw = MathHelper.lerpAngleDegrees(tickDelta, this.prevBodyYaw, this.bodyYaw);
-		float headYaw = MathHelper.lerpAngleDegrees(tickDelta, this.prevHeadYaw, this.headYaw);
-		float deltaHeadYaw = headYaw - bodyYaw;
-		if (this.hasVehicle() && this.getVehicle() instanceof LivingEntity) {
-			LivingEntity livingEntity2 = (LivingEntity) this.getVehicle();
-			bodyYaw = MathHelper.lerpAngleDegrees(tickDelta, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
-			deltaHeadYaw = headYaw - bodyYaw;
-			float relativeLookYaw = MathHelper.wrapDegrees(deltaHeadYaw);
-			if (relativeLookYaw < -85.0f) {
-				relativeLookYaw = -85.0f;
-			}
-			if (relativeLookYaw >= 85.0f) {
-				relativeLookYaw = 85.0f;
-			}
-			bodyYaw = headYaw - relativeLookYaw;
-			if (relativeLookYaw * relativeLookYaw > 2500.0f) {
-				bodyYaw += relativeLookYaw * 0.2f;
-			}
-			deltaHeadYaw = headYaw - bodyYaw;
-		}
-		float pitch = MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
-		if (LivingEntityRenderer.shouldFlipUpsideDown(this)) {
-			pitch *= -1.0f;
-			deltaHeadYaw *= -1.0f;
-		}
-		
-		//float n = 0f;
-		//if (this.isInPose(EntityPose.SLEEPING) && this.getSleepingDirection() != null) {
-		//	n = this.getEyeHeight(EntityPose.STANDING) - 0.1f;
-		//}
-		float ticksLived = this.age + tickDelta;
-		float n = 0.0f;
-		float o = 0.0f;
-		if (!this.hasVehicle() && this.isAlive()) {
-			n = MathHelper.lerp(tickDelta, this.lastLimbDistance, this.limbDistance);
-			o = this.limbAngle - this.limbDistance * (1.0f - tickDelta);
-			if (this.isBaby()) {
-				o *= 3.0f;
-			}
-			if (n > 1.0f) {
-				n = 1.0f;
-			}
-		}
-		model.animateModel((AbstractClientPlayerEntity)(Object)this, o, n, tickDelta);
-		model.setAngles((AbstractClientPlayerEntity)(Object)this, o, n, ticksLived, deltaHeadYaw, pitch);
-
-		//TODO: Determine whether the model should be visible to the player
-	}*/
 }

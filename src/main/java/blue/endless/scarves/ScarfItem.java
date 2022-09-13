@@ -19,6 +19,7 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class ScarfItem extends TrinketItem {
 	public static final String ID = "scarf";
+	public static final int MAX_CREATIVE_SCARF_LENGTH = 8;
 	
 	public ScarfItem() {
 		super(new FabricItemSettings().rarity(Rarity.UNCOMMON).group(ScarvesMod.ITEM_GROUP));
@@ -29,7 +30,11 @@ public class ScarfItem extends TrinketItem {
 		super.appendStacks(group, stacks);
 		if (this.isIn(group)) {
 			for(PrideFlag flag : PrideFlags.getFlags()) {
-				ItemStack scarf = createScarf(flag, 30, flag, 15);
+				int reps = MAX_CREATIVE_SCARF_LENGTH / flag.getColors().size();
+				if (reps < 1) reps = 1;
+				int flagLength = flag.getColors().size() * reps;
+				
+				ItemStack scarf = createScarf(flag, flagLength, flag, 0);
 				
 				//Create name
 				String flagKey = "flag.pridelib."+flag.getId();

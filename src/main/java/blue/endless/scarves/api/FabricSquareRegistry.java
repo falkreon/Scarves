@@ -13,6 +13,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 
 public class FabricSquareRegistry {
@@ -130,6 +132,46 @@ public class FabricSquareRegistry {
 			return entries.containsKey(block);
 		} else {
 			return entries.containsKey(item);
+		}
+	}
+	
+	public static boolean canBeStapled(ItemStack stack) {
+		if (isFabricSquare(stack)) return true;
+		
+		NbtCompound tag = stack.getNbt();
+		if (tag==null) return false;
+		
+		NbtList leftScarfTag = tag.getList("LeftScarf", NbtElement.COMPOUND_TYPE);
+		NbtList rightScarfTag = tag.getList("RightScarf", NbtElement.COMPOUND_TYPE);
+			
+		boolean hasLeftData = (leftScarfTag==null) ? false : leftScarfTag.size()>0;
+		boolean hasRightData = (rightScarfTag==null) ? false : rightScarfTag.size()>0;
+		
+		return hasLeftData ^ hasRightData;
+	}
+	
+	public static NbtList getStaplerData(ItemStack stack) {
+		if (isFabricSquare(stack)) {
+			NbtList result = new NbtList();
+			result.add(forItem(stack).toCompound());
+			return result;
+		} else {
+			NbtCompound tag = stack.getNbt();
+			if (tag==null) return new NbtList();
+			
+			NbtList leftScarfTag = tag.getList("LeftScarf", NbtElement.COMPOUND_TYPE);
+			NbtList rightScarfTag = tag.getList("RightScarf", NbtElement.COMPOUND_TYPE);
+			
+			boolean hasLeftData = (leftScarfTag==null) ? false : leftScarfTag.size()>0;
+			boolean hasRightData = (rightScarfTag==null) ? false : rightScarfTag.size()>0;
+			
+			if (hasLeftData) {
+				return leftScarfTag;
+			} else if (hasRightData) {
+				return rightScarfTag;
+			} else {
+				return new NbtList();
+			}
 		}
 	}
 }
