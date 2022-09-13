@@ -3,6 +3,7 @@ package blue.endless.scarves;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import blue.endless.scarves.api.ScarvesApi;
 import blue.endless.scarves.api.ScarvesIntegration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -18,6 +19,7 @@ public class ScarvesMod implements ModInitializer {
 	
 	public static ItemGroup ITEM_GROUP;
 	
+	@SuppressWarnings("removal")
 	@Override
 	public void onInitialize() {
 		ITEM_GROUP = FabricItemGroupBuilder
@@ -32,6 +34,7 @@ public class ScarvesMod implements ModInitializer {
 		for (EntrypointContainer<ScarvesIntegration> entrypoint : FabricLoader.getInstance().getEntrypointContainers(MODID, ScarvesIntegration.class)) {
 			try {
 				entrypoint.getEntrypoint().integrateWithScarves();
+				entrypoint.getEntrypoint().integrateWithScarves(ScarvesApi.instance());
 			} catch (Throwable t) {
 				LOGGER.error("Mod '"+entrypoint.getProvider().getMetadata().getId()+"' threw an exception trying to activate Scarves integration.", t);
 			}

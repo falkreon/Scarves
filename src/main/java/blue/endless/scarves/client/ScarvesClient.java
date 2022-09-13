@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 public class ScarvesClient implements ClientModInitializer {
-	public static final double SCARF_GRAVITY = -0.005;
+	public static final double SCARF_GRAVITY = -0.01;
 	
 	@Override
 	public void onInitializeClient() {
@@ -61,9 +61,10 @@ public class ScarvesClient implements ClientModInitializer {
 						Vec3d prevUp = new Vec3d(0,1,0).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
 						for(int i=0; i<nodes.size(); i++) {
 							ScarfNode cur = nodes.get(i);
+							Vec3d lerpedPos = cur.getLerpedPosition(ctx.tickDelta());
 							
-							BlockPos curPos = new BlockPos(cur.position.add(0,0.25,0));
-							Vec3d forwardVec = cur.position.subtract(prev).normalize();
+							BlockPos curPos = new BlockPos(lerpedPos.add(0,0.25,0));
+							Vec3d forwardVec = lerpedPos.subtract(prev).normalize();
 							Vec3d tempUpVec = (forwardVec.x==0&&forwardVec.z==0) ? new Vec3d(1,0,0) : new Vec3d(0,1,0);
 							Vec3d rightVec = forwardVec.crossProduct(tempUpVec);
 							Vec3d curUp = forwardVec.crossProduct(rightVec).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
@@ -81,8 +82,8 @@ public class ScarvesClient implements ClientModInitializer {
 									prev.add(prevUp),
 									//prev.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
 									//cur.position.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
-									cur.position.add(curUp),
-									cur.position,
+									lerpedPos.add(curUp),
+									lerpedPos,
 									
 									cur.square,
 									
@@ -91,7 +92,7 @@ public class ScarvesClient implements ClientModInitializer {
 									nodeLight
 									);
 							
-							prev = cur.position;
+							prev = lerpedPos;
 							prevUp = curUp;
 						}
 					});

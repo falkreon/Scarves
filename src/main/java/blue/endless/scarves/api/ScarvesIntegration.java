@@ -1,10 +1,19 @@
 package blue.endless.scarves.api;
 
+/**
+ * This interface can be registered as an entrypoint with the "scarves" id, in order to do mod interop things, such as
+ * making your blocks/items work in the Scarf Stapler, or letting Scarves know which way the wind
+ * is blowing.
+ */
 public interface ScarvesIntegration {
 	/**
-	 * The main thing you can do here is safely call {@link FabricSquareRegistry#register(net.minecraft.block.Block, net.minecraft.util.Identifier)}
-	 * 
-	 * <p>Set this class aside and don't touch it, and when this method is called register your blocks as fabric squares!
+	 * Retained for ModFest compatibility. Please move to {@link #integrateWithScarves(ScarvesApi)} as soon as possible.
 	 */
-	void integrateWithScarves();
+	@Deprecated(forRemoval = true)
+	default void integrateWithScarves() {}
+	
+	/**
+	 * Allows you to call methods on ScarvesApi without worrying about a hard dependency!
+	 */
+	default void integrateWithScarves(ScarvesApi api) {}
 }

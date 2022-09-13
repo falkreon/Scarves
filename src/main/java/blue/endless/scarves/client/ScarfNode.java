@@ -1,6 +1,7 @@
 package blue.endless.scarves.client;
 
 import blue.endless.scarves.api.FabricSquare;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ScarfNode {
@@ -9,11 +10,13 @@ public class ScarfNode {
 	/** Maximum d^2 allowed between fabric squares; the squared width of a square. */
 	public static final float SQUARED_WIDTH = FABRIC_SQUARE_WIDTH * FABRIC_SQUARE_WIDTH;
 	protected Vec3d position;
-	protected Vec3d velocity;
+	protected Vec3d lastPosition;
+	//protected Vec3d velocity;
 	protected FabricSquare square;
 	
 	public ScarfNode(Vec3d pos, FabricSquare square) {
 		this.position = pos;
+		this.lastPosition = pos;
 		this.square = square;
 	};
 	
@@ -29,8 +32,24 @@ public class ScarfNode {
 		return position;
 	}
 	
+	public Vec3d getLastPosition() {
+		return lastPosition;
+	}
+	
 	public void setPosition(Vec3d pos) {
 		position = pos;
+	}
+	
+	public void setLastPosition(Vec3d pos) {
+		lastPosition = pos;
+	}
+	
+	public Vec3d getLerpedPosition(double deltaTime) {
+		return new Vec3d(
+				MathHelper.lerp(deltaTime, lastPosition.x, position.x),
+				MathHelper.lerp(deltaTime, lastPosition.y, position.y),
+				MathHelper.lerp(deltaTime, lastPosition.z, position.z)
+				);
 	}
 	
 	public void setSquare(FabricSquare square) {
