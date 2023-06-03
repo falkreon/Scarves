@@ -1,30 +1,27 @@
 package blue.endless.scarves;
 
-import org.apache.commons.lang3.StringUtils;
-
 import blue.endless.scarves.api.FabricSquare;
 import dev.emi.trinkets.api.TrinketItem;
 import io.github.queerbric.pride.PrideFlag;
-import io.github.queerbric.pride.PrideFlags;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.collection.DefaultedList;
 
 public class ScarfItem extends TrinketItem {
 	public static final String ID = "scarf";
 	public static final int MAX_CREATIVE_SCARF_LENGTH = 8;
 	
 	public ScarfItem() {
-		super(new FabricItemSettings().rarity(Rarity.UNCOMMON).group(ScarvesMod.ITEM_GROUP));
+		super(new FabricItemSettings().rarity(Rarity.UNCOMMON));
+				//.group(ScarvesMod.ITEM_GROUP)); //TODO: Uh oh
 	}
-
+	
+	//TODO: The creative menu changed again, and probably in an obnoxious way
+	/*
 	@Override
 	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
 		super.appendStacks(group, stacks);
@@ -50,7 +47,7 @@ public class ScarfItem extends TrinketItem {
 			Text name = Text.translatable("item.scarves.scarf.named", biPanName);
 			stacks.add(setName(biPanScarf, name));
 		}
-	}
+	}*/
 	
 	public static NbtList createTail(PrideFlag flag, int minLength) {
 		NbtList result = new NbtList();

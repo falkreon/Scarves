@@ -1,5 +1,7 @@
 package blue.endless.scarves.client;
 
+import org.joml.Matrix4f;
+
 import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.api.FabricSquare;
 import net.minecraft.client.MinecraftClient;
@@ -11,7 +13,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 

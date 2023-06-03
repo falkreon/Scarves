@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import blue.endless.scarves.api.ScarvesApi;
 import blue.endless.scarves.api.ScarvesIntegration;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.item.ItemGroup;
@@ -22,10 +21,11 @@ public class ScarvesMod implements ModInitializer {
 	@SuppressWarnings("removal")
 	@Override
 	public void onInitialize() {
+		/*
 		ITEM_GROUP = FabricItemGroupBuilder
 			.create(new Identifier(MODID, "general"))
 			.icon(()->new ItemStack(ScarvesItems.SCARF))
-			.build();
+			.build();*/
 		
 		ScarvesBlocks.register();
 		ScarvesItems.register();

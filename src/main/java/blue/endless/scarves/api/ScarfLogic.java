@@ -36,7 +36,11 @@ public class ScarfLogic {
 			ScarfNode node = nodes.get(i);
 			node.setLastPosition(node.getPosition());
 			Vec3d prospectivePosition = node.getPosition().add(0, ScarvesClient.SCARF_GRAVITY, 0);
-			BlockPos blockInThatPosition = new BlockPos(prospectivePosition.add(0,-ScarfNode.FABRIC_SQUARE_WIDTH,0));
+			BlockPos blockInThatPosition = new BlockPos(
+					(int) prospectivePosition.x,
+					(int) (prospectivePosition.y - ScarfNode.FABRIC_SQUARE_WIDTH),
+					(int) prospectivePosition.z
+					);
 			if (world!=null) {
 				if (!world.isTopSolid(blockInThatPosition, entity)) {
 					node.setPosition(prospectivePosition);
@@ -51,7 +55,11 @@ public class ScarfLogic {
 			
 			//move it
 			prospectivePosition = node.getPosition().add(wind);
-			blockInThatPosition = new BlockPos(prospectivePosition);
+			blockInThatPosition = new BlockPos(
+					(int) prospectivePosition.x,
+					(int) prospectivePosition.y,
+					(int) prospectivePosition.z
+					);
 			if (world!=null) {
 				if (!world.isTopSolid(blockInThatPosition, entity)) {
 					node.setPosition(prospectivePosition);
@@ -69,7 +77,11 @@ public class ScarfLogic {
 		for(int i=0; i<nodes.size(); i++) {
 			ScarfNode node = nodes.get(i);
 			Vec3d prospectivePosition = node.getPosition().add(0, ScarvesClient.SCARF_GRAVITY, 0);
-			BlockPos blockInThatPosition = new BlockPos(prospectivePosition);
+			BlockPos blockInThatPosition = new BlockPos(
+					(int) prospectivePosition.x,
+					(int) prospectivePosition.y,
+					(int) prospectivePosition.z
+					);
 			if (world!=null) {
 				if (!world.isTopSolid(blockInThatPosition, entity)) {
 					node.setPosition(prospectivePosition);
@@ -84,7 +96,11 @@ public class ScarfLogic {
 			
 			//move it
 			prospectivePosition = node.getPosition().add(wind);
-			blockInThatPosition = new BlockPos(prospectivePosition);
+			blockInThatPosition = new BlockPos(
+					(int) prospectivePosition.x,
+					(int) prospectivePosition.y,
+					(int) prospectivePosition.z
+					);
 			if (world!=null) {
 				if (!world.isTopSolid(blockInThatPosition, entity)) {
 					node.setPosition(prospectivePosition);

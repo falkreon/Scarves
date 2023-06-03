@@ -1,5 +1,10 @@
 package blue.endless.scarves.client;
 
+import org.joml.AxisAngle4f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.client.TrinketRenderer;
 import net.minecraft.block.Blocks;
@@ -9,13 +14,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation.Mode;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
 
 public class ScarfTrinketRenderer implements TrinketRenderer {
 
@@ -40,7 +42,7 @@ public class ScarfTrinketRenderer implements TrinketRenderer {
 		
 		TrinketRenderer.translateToFace(matrices, (PlayerEntityModel<AbstractClientPlayerEntity>) contextModel, (AbstractClientPlayerEntity) entity, headYaw, headPitch);
 		
-		matrices.multiply(Quaternion.fromEulerXyz(0, 0, (float) Math.PI));
+		matrices.multiply(new Quaternionf(new AxisAngle4f((float) Math.PI, 0, 0, 1)));
 		matrices.translate(0, -0.25f, 1);
 		
 		//TrinketRenderer.translateToFace(matrices, (PlayerEntityModel<AbstractClientPlayerEntity>)contextModel, (AbstractClientPlayerEntity) entity, headYaw, headPitch);
@@ -83,10 +85,10 @@ public class ScarfTrinketRenderer implements TrinketRenderer {
 		//matrices.multiplyPositionMatrix(toUndo);
 		matrices.translate(0, -0.25f, 1);
 		
-		BakedModel bakedModel = MinecraftClient.getInstance().getItemRenderer().getModel(stack, entity.world, entity, 0);
+		BakedModel bakedModel = MinecraftClient.getInstance().getItemRenderer().getModel(stack, entity.getWorld(), entity, 0);
 		BakedModel stoneModel = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.STONE.getDefaultState());
 		
-		MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.FIXED, false, matrices, vertexConsumers, light, 0, stoneModel);
+		MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, light, 0, stoneModel);
 		//MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.FIXED, light, 0, matrices, vertexConsumers, 0);
 		
 		matrices.pop();

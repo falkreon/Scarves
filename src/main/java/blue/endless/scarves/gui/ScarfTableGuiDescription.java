@@ -1,7 +1,6 @@
 package blue.endless.scarves.gui;
 
 import blue.endless.scarves.ScarfStaplerBlockEntity;
-import blue.endless.scarves.ScarfTableBlockEntity;
 import blue.endless.scarves.ScarvesBlocks;
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;

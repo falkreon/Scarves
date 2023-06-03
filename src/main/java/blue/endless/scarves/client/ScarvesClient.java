@@ -63,7 +63,11 @@ public class ScarvesClient implements ClientModInitializer {
 							ScarfNode cur = nodes.get(i);
 							Vec3d lerpedPos = cur.getLerpedPosition(ctx.tickDelta());
 							
-							BlockPos curPos = new BlockPos(lerpedPos.add(0,0.25,0));
+							BlockPos curPos = new BlockPos(
+									(int) lerpedPos.x,
+									(int) (lerpedPos.y + 0.25),
+									(int) lerpedPos.z
+									);
 							Vec3d forwardVec = lerpedPos.subtract(prev).normalize();
 							Vec3d tempUpVec = (forwardVec.x==0&&forwardVec.z==0) ? new Vec3d(1,0,0) : new Vec3d(0,1,0);
 							Vec3d rightVec = forwardVec.crossProduct(tempUpVec);

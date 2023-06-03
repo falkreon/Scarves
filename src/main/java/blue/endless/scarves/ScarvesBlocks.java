@@ -6,10 +6,13 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ScarvesBlocks {
 	
@@ -40,18 +43,32 @@ public class ScarvesBlocks {
 		//		FabricBlockEntityTypeBuilder.<ScarfTableBlockEntity>create(ScarfTableBlockEntity::new, SCARF_TABLE).build()
 		//		);
 		
-		SCARF_STAPLER_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, ScarfStaplerBlock.ID, new ScreenHandlerType<>((syncId, inventory) -> new ScarfStaplerGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY)));
-		SCARF_TABLE_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, ScarfTableBlock.ID, new ScreenHandlerType<>((syncId, inventory) -> new ScarfTableGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY)));
+		SCARF_STAPLER_SCREEN_HANDLER = Registry.register(
+				Registries.SCREEN_HANDLER,
+				ScarfStaplerBlock.ID,
+				new ScreenHandlerType<ScarfStaplerGuiDescription>(
+						(syncId, inventory) -> new ScarfStaplerGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY),
+						FeatureSet.empty()
+						)
+				);
+		SCARF_TABLE_SCREEN_HANDLER = Registry.register(
+				Registries.SCREEN_HANDLER,
+				ScarfTableBlock.ID,
+				new ScreenHandlerType<ScarfTableGuiDescription>(
+						(syncId, inventory) -> new ScarfTableGuiDescription(syncId, inventory, ScreenHandlerContext.EMPTY),
+						FeatureSet.empty()
+						)
+				);
 	}
 	
 	private static <T extends Block> T register(T block, String id) {
-		Registry.register(Registry.BLOCK, new Identifier(ScarvesMod.MODID, id), block);
+		Registry.register(Registries.BLOCK, new Identifier(ScarvesMod.MODID, id), (Block) block);
 		return block;
 	}
 	
 	private static <T extends BlockEntity> BlockEntityType<T> register(String id, FabricBlockEntityTypeBuilder.Factory<T> factory, Block block) {
 		BlockEntityType<T> result = FabricBlockEntityTypeBuilder.<T>create(factory, block).build();
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(ScarvesMod.MODID, id), result);
+		Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(ScarvesMod.MODID, id), result);
 		return result;
 	}
 }

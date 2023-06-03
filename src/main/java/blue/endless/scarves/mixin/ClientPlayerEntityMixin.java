@@ -27,7 +27,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -35,9 +34,9 @@ import net.minecraft.world.World;
 
 @Mixin({ClientPlayerEntity.class, OtherClientPlayerEntity.class})
 public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IScarfHaver {
-
-	public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile, PlayerPublicKey publicKey) {
-		super(world, pos, yaw, gameProfile, publicKey);
+	
+	public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+		super(world, pos, yaw, gameProfile);
 	}
 
 	private static final float SCARF_TAIL_SEPARATION = 0.19f;
@@ -111,13 +110,13 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 					NbtList leftScarfTag = tag.getList("LeftScarf", NbtElement.COMPOUND_TYPE);
 					if (leftScarfTag!=null) {
 						if (scarves_leftScarf==null) scarves_leftScarf = new SimpleScarfAttachment();
-						ScarfLogic.updateScarfAttachment(scarves_leftScarf, this.world, (Entity)(Object)this, this.getPos(), leftScarfTag);
+						ScarfLogic.updateScarfAttachment(scarves_leftScarf, this.getWorld(), (Entity)(Object)this, this.getPos(), leftScarfTag);
 					}
 					
 					NbtList rightScarfTag = tag.getList("RightScarf", NbtElement.COMPOUND_TYPE);
 					if (rightScarfTag!=null) {
 						if (scarves_rightScarf==null) scarves_rightScarf = new SimpleScarfAttachment();
-						ScarfLogic.updateScarfAttachment(scarves_rightScarf, this.world, (Entity)(Object)this, this.getPos(), rightScarfTag);
+						ScarfLogic.updateScarfAttachment(scarves_rightScarf, this.getWorld(), (Entity)(Object)this, this.getPos(), rightScarfTag);
 					}
 				}
 			}
