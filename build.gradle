@@ -35,15 +35,15 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
-	modImplementation include("dev.emi:trinkets:3.4.0") {
+	modImplementation include("dev.emi:trinkets:3.7.0") {
 		exclude group: "com.terraformersmc", module: "modmenu"
 	}
 	
-	modImplementation include("io.github.cottonmc:LibGui:6.0.0+1.19")
+	modImplementation include("io.github.cottonmc:LibGui:${project.libgui_version}")
 	
-	modImplementation include("io.github.queerbric:pridelib:1.2.0+1.19")
+	modImplementation include("io.github.queerbric:pridelib:1.2.0+1.19.4")
 	
-	modRuntimeOnly "com.terraformersmc:modmenu:4.0.6"
+	//modRuntimeOnly "com.terraformersmc:modmenu:4.0.6"
 }
 
 processResources {

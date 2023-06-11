@@ -30,6 +30,7 @@
   ],
 
   "depends": {
+    "pride": ">=1.2.0",
     "fabricloader": ">=0.14.21",
     "fabric": "*",
     "minecraft": "~1.20-rc.1",

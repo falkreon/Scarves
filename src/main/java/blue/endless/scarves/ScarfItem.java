@@ -75,7 +75,7 @@ public class ScarfItem extends TrinketItem {
 		return stack;
 	}
 	
-	private ItemStack setName(ItemStack stack, Text name) {
+	public static ItemStack setName(ItemStack stack, Text name) {
 		NbtCompound tag = stack.getOrCreateNbt();
 		NbtCompound display = new NbtCompound();
 			String json = Text.Serializer.toJson(name);

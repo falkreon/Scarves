@@ -2,15 +2,24 @@ package blue.endless.scarves.client;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import blue.endless.scarves.ScarfItem;
 import blue.endless.scarves.ScarvesBlocks;
+import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
 import blue.endless.scarves.gui.ScarfTableGuiDescription;
+import io.github.queerbric.pride.PrideFlag;
+import io.github.queerbric.pride.PrideFlags;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
@@ -20,6 +29,7 @@ public class ScarvesClient implements ClientModInitializer {
 	
 	@Override
 	public void onInitializeClient() {
+		//addPrideScarves();
 		
 		WorldRenderEvents.BEFORE_ENTITIES.register(ScarvesClient::beforeEntities);
 		
@@ -109,4 +119,6 @@ public class ScarvesClient implements ClientModInitializer {
 		
 		ctx.matrixStack().pop();
 	}
+	
+	
 }
