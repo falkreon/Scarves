@@ -2,24 +2,15 @@ package blue.endless.scarves.client;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import blue.endless.scarves.ScarfItem;
 import blue.endless.scarves.ScarvesBlocks;
-import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
 import blue.endless.scarves.gui.ScarfTableGuiDescription;
-import io.github.queerbric.pride.PrideFlag;
-import io.github.queerbric.pride.PrideFlags;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
@@ -45,16 +36,13 @@ public class ScarvesClient implements ClientModInitializer {
 		Vec3d pos = ctx.camera().getPos();
 		ctx.matrixStack().translate(-pos.x, -pos.y, -pos.z);
 		
-		
-		//BlockPos scarfPos = new BlockPos(0,0,0);
-		//int blockLight = ctx.world().getLightLevel(LightType.BLOCK, scarfPos);
-		//int skyLight = ctx.world().getLightLevel(LightType.SKY, scarfPos);
-		//int light = LightmapTextureManager.pack(blockLight, skyLight);
-
-		
 		for(Entity entity : ctx.world().getEntities()) {
 			if (entity instanceof IScarfHaver scarfHaver) {
 				try {
+					final boolean tickDeprived = (entity instanceof ITickDeprivationAware depAware) ?
+						depAware.engination_isTickDeprived(ctx.world().getTime()) :
+						false;
+					
 					scarfHaver.iScarfHaver_getAttachments(ctx.tickDelta()).forEach( it-> {
 						//Physics - gravity and collisions run on the tick thread
 						List<ScarfNode> nodes = it.nodes();
@@ -71,7 +59,9 @@ public class ScarvesClient implements ClientModInitializer {
 						Vec3d prevUp = new Vec3d(0,1,0).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
 						for(int i=0; i<nodes.size(); i++) {
 							ScarfNode cur = nodes.get(i);
-							Vec3d lerpedPos = cur.getLerpedPosition(ctx.tickDelta());
+							Vec3d lerpedPos = (tickDeprived) ? 
+									cur.getPosition() :
+									cur.getLerpedPosition(ctx.tickDelta());
 							
 							BlockPos curPos = new BlockPos(
 									(int) lerpedPos.x,
@@ -94,8 +84,6 @@ public class ScarvesClient implements ClientModInitializer {
 							ScarfRenderer.quad(
 									prev,
 									prev.add(prevUp),
-									//prev.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
-									//cur.position.add(0,ScarfNode.FABRIC_SQUARE_WIDTH,0),
 									lerpedPos.add(curUp),
 									lerpedPos,
 									

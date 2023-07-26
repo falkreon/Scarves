@@ -12,6 +12,7 @@ import com.mojang.authlib.GameProfile;
 import blue.endless.scarves.ScarvesItems;
 import blue.endless.scarves.api.ScarfLogic;
 import blue.endless.scarves.client.IScarfHaver;
+import blue.endless.scarves.client.ITickDeprivationAware;
 import blue.endless.scarves.client.ScarfAttachment;
 import blue.endless.scarves.client.SimpleScarfAttachment;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -33,7 +34,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Mixin({ClientPlayerEntity.class, OtherClientPlayerEntity.class})
-public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IScarfHaver {
+public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IScarfHaver, ITickDeprivationAware {
 	
 	public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(world, pos, yaw, gameProfile);
@@ -43,6 +44,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 
 	private SimpleScarfAttachment scarves_leftScarf;
 	private SimpleScarfAttachment scarves_rightScarf;
+	private long scarves_lastValidTick;
 	
 	@Override
 	public Stream<ScarfAttachment> iScarfHaver_getAttachments(float delta) {
@@ -76,9 +78,18 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 						referencePos = referencePos.add(lookVec.multiply(0.7)).add(0, 0.25, 0);
 					}
 				}
-
-				scarves_leftScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
-				scarves_rightScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+				
+				final boolean tickDeprived = (getEntityWorld() == null) ?
+						false :
+						engination_isTickDeprived(getEntityWorld().getTime());
+				
+				if (tickDeprived) {
+					scarves_leftScarf.setLocation(this.getPos().add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+					scarves_rightScarf.setLocation(this.getPos().add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+				} else {
+					scarves_leftScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+					scarves_rightScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+				}
 				
 				return Stream.of(scarves_leftScarf, scarves_rightScarf);
 			}
@@ -91,6 +102,10 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 	
 	@Inject(at = { @At("TAIL") }, method="tick()V")
 	public void afterTick(CallbackInfo ci) {
+		World world = this.getEntityWorld();
+		if (world != null) {
+			scarves_lastValidTick = world.getTime();
+		}
 		scarves$updateScarfAttachments();
 	}
 	
@@ -146,5 +161,11 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 			}
 		}
 		return result;
+	}
+	
+	@Override
+	public boolean engination_isTickDeprived(long currentTick) {
+		long elapsed = currentTick - scarves_lastValidTick;
+		return elapsed > 1;
 	}
 }
