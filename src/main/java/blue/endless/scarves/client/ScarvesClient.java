@@ -3,6 +3,7 @@ package blue.endless.scarves.client;
 import java.util.List;
 
 import blue.endless.scarves.ScarvesBlocks;
+import blue.endless.scarves.ghost.GhostInventoryNetworking;
 import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
 import blue.endless.scarves.gui.ScarfTableGuiDescription;
 import net.fabricmc.api.ClientModInitializer;
@@ -20,14 +21,13 @@ public class ScarvesClient implements ClientModInitializer {
 	
 	@Override
 	public void onInitializeClient() {
-		//addPrideScarves();
-		
 		WorldRenderEvents.BEFORE_ENTITIES.register(ScarvesClient::beforeEntities);
+		
+		GhostInventoryNetworking.initClient();
 		
 		HandledScreens.<ScarfStaplerGuiDescription, ScarfStaplerScreen>register(ScarvesBlocks.SCARF_STAPLER_SCREEN_HANDLER, (gui, inventory, title) -> new ScarfStaplerScreen(gui, inventory, title));
 		HandledScreens.<ScarfTableGuiDescription, ScarfTableScreen>register(ScarvesBlocks.SCARF_TABLE_SCREEN_HANDLER, (gui, inventory, title) -> new ScarfTableScreen(gui, inventory, title));
 	}
-	
 	
 	public static void beforeEntities(WorldRenderContext ctx) {
 		ctx.matrixStack().push();

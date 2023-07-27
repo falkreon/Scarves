@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager.Builder;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -45,7 +46,15 @@ public class ScarfTableBlock extends BlockWithEntity {
 	
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+		if (!world.isClient) { 
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+			if (player instanceof ServerPlayerEntity serverPlayer) {
+				ScarfTableBlockEntity be = world.getBlockEntity(pos, ScarvesBlocks.SCARF_TABLE_ENTITY).orElse(null);
+				if (be != null) {
+					be.syncGhostItems(serverPlayer);
+				}
+			}
+		}
 		return ActionResult.SUCCESS;
 	}
 	

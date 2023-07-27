@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import blue.endless.scarves.api.ScarvesApi;
 import blue.endless.scarves.api.ScarvesIntegration;
+import blue.endless.scarves.ghost.GhostInventoryNetworking;
 import io.github.queerbric.pride.PrideFlag;
 import io.github.queerbric.pride.PrideFlags;
 import net.fabricmc.api.ModInitializer;
@@ -26,6 +27,8 @@ import net.minecraft.util.Identifier;
 public class ScarvesMod implements ModInitializer {
 	public static final String MODID = "scarves";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Scarves");
+	
+	public static final Identifier GHOST_SLOT_MESSAGE = new Identifier(MODID, "ghost");
 	
 	public static ItemGroup ITEM_GROUP;
 	
@@ -51,6 +54,9 @@ public class ScarvesMod implements ModInitializer {
 		ScarvesBlocks.register();
 		ScarvesItems.register();
 		
+		//TODO: I'd love to use static data to load in custom scarves squares but I can't.
+		
+		GhostInventoryNetworking.init();
 		
 		for (EntrypointContainer<ScarvesIntegration> entrypoint : FabricLoader.getInstance().getEntrypointContainers(MODID, ScarvesIntegration.class)) {
 			try {

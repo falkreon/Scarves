@@ -5,6 +5,11 @@
 	"item.scarves.scarf": "Scarf",
 	"trinkets.slot.chest.scarf": "Scarf",
 	"tag.trinkets.slot.chest.scarf": "Scarves",
+	
+	"gui.scarves.pattern_length": "Pattern Length: %s",
+	"gui.scarves.repetitions": "Repetitions: %s",
+	"gui.scarves.apply_left": "Apply Left",
+	"gui.scarves.apply_right": "Apply Right",
 	"gui.scarves.staple": "Staple",
 	
 	"item.scarves.scarf.named" : "%s Scarf",

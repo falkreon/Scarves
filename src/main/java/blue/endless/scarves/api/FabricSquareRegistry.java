@@ -38,7 +38,14 @@ public class FabricSquareRegistry {
 		register(Blocks.RED_WOOL,        "minecraft:block/red_wool");
 		register(Blocks.BLACK_WOOL,      "minecraft:block/black_wool");
 		
+		
+		register(Blocks.BEDROCK,         "minecraft:block/bedrock");
+		register(Blocks.PRISMARINE,      "minecraft:block/prismarine");
+		register(Blocks.PURPUR_BLOCK,    "minecraft:block/purpur_block");
+		register(Blocks.SANDSTONE,       "minecraft:block/sandstone_top");
+		register(Blocks.RED_SANDSTONE,   "minecraft:block/red_sandstone_top");
 		register(Blocks.GLOWSTONE,       "minecraft:block/glowstone");
+		register(Blocks.REDSTONE_BLOCK,  new FabricSquare(new Identifier("minecraft:block/redstone_block"), 4, 4, 0xFF_FFFFFF, true));
 		register(Items.LAVA_BUCKET,      new FabricSquare(new Identifier("minecraft:block/lava_still"), 4, 4, 0xFF_FFFFFF, true));
 		register(Items.WATER_BUCKET,     new FabricSquare(new Identifier("minecraft:block/water_still"), 4, 4, 0xFF_4444FF, false));
 	}

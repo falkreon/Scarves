@@ -10,5 +10,13 @@ public class ScarfTableScreen extends CottonInventoryScreen<ScarfTableGuiDescrip
 	public ScarfTableScreen(ScarfTableGuiDescription description, PlayerInventory inventory, Text title) {
 		super(description, inventory, title);
 	}
-
+	
+	
+	public int getX() {
+		return this.x;
+	}
+	
+	public int getY() {
+		return this.y;
+	}
 }

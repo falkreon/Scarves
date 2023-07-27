@@ -11,13 +11,24 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
 	maven {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/"
 	}
 	maven {
 		name = "Ladysnake Libs"
-		url = "https://ladysnake.jfrog.io/artifactory/mods"
+		url = "https://maven.ladysnake.org/releases"
 	}
 	maven {
         name = "CottonMC"
@@ -39,11 +50,12 @@ dependencies {
 		exclude group: "com.terraformersmc", module: "modmenu"
 	}
 	
+	modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
+	modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
+	
 	modImplementation include("io.github.cottonmc:LibGui:${project.libgui_version}")
 	
 	modImplementation include("io.github.queerbric:pridelib:1.2.0+1.19.4")
-	
-	//modRuntimeOnly "com.terraformersmc:modmenu:4.0.6"
 }
 
 processResources {
