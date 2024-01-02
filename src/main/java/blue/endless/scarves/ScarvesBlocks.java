@@ -8,7 +8,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
@@ -30,18 +29,8 @@ public class ScarvesBlocks {
 		SCARF_TABLE = register(new ScarfTableBlock(), ScarfTableBlock.ID);
 		
 		SCARF_STAPLER_ENTITY = register(ScarfStaplerBlock.ID, ScarfStaplerBlockEntity::new, SCARF_STAPLER);
-		//		Registry.register(
-		//		Registry.BLOCK_ENTITY_TYPE,
-		//		new Identifier(ScarvesMod.MODID, ScarfStaplerBlock.ID),
-		//		FabricBlockEntityTypeBuilder.<ScarfStaplerBlockEntity>create(ScarfStaplerBlockEntity::new, SCARF_STAPLER).build()
-		//		);
 		
 		SCARF_TABLE_ENTITY = register(ScarfTableBlock.ID, ScarfTableBlockEntity::new, SCARF_TABLE);
-		//		Registry.register(
-		//		Registry.BLOCK_ENTITY_TYPE,
-		//		new Identifier(ScarvesMod.MODID, ScarfTableBlock.ID),
-		//		FabricBlockEntityTypeBuilder.<ScarfTableBlockEntity>create(ScarfTableBlockEntity::new, SCARF_TABLE).build()
-		//		);
 		
 		SCARF_STAPLER_SCREEN_HANDLER = Registry.register(
 				Registries.SCREEN_HANDLER,

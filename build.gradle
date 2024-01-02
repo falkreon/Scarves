@@ -1,6 +1,6 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
-	id 'maven-publish'
+	id "maven-publish"
+	id "fabric-loom" version "1.4-SNAPSHOT"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -22,6 +22,7 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+	mavenLocal();
 	maven {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/"
@@ -31,10 +32,10 @@ repositories {
 		url = "https://maven.ladysnake.org/releases"
 	}
 	maven {
-        name = "CottonMC"
-        url = "https://server.bbkr.space/artifactory/libs-release"
-    }
-    maven {
+		name = "CottonMC"
+		url = "https://server.bbkr.space/artifactory/libs-release"
+	}
+	maven {
 		url 'https://maven.gegy.dev'
 	}
 }
@@ -46,9 +47,11 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
-	modImplementation include("dev.emi:trinkets:3.7.0") {
+	modImplementation include("dev.emi:trinkets:3.8.0") {
 		exclude group: "com.terraformersmc", module: "modmenu"
 	}
+	modLocalRuntime "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0";
+	modLocalRuntime "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0";
 	
 	modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
 	modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
@@ -56,6 +59,8 @@ dependencies {
 	modImplementation include("io.github.cottonmc:LibGui:${project.libgui_version}")
 	
 	modImplementation include("io.github.queerbric:pridelib:1.2.0+1.19.4")
+	
+	modImplementation include("gay.debuggy:StaticData:1.1.0+1.20.4")
 }
 
 processResources {
@@ -67,14 +72,11 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.encoding = "UTF-8"
 	it.options.release = 17
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 }
 
@@ -91,12 +93,7 @@ publishing {
 			from components.java
 		}
 	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
 	}
 }

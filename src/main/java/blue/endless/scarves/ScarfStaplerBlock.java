@@ -2,6 +2,9 @@ package blue.endless.scarves;
 
 import java.util.List;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -31,6 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ScarfStaplerBlock extends BlockWithEntity {
+	public static final MapCodec<ScarfStaplerBlock> CODEC = Block.createCodec(ScarfStaplerBlock::new);
 	public static final String ID = "scarf_stapler";
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final float PX = 1/16f;
@@ -38,6 +42,10 @@ public class ScarfStaplerBlock extends BlockWithEntity {
 	
 	public ScarfStaplerBlock() {
 		super(FabricBlockSettings.copyOf(Blocks.CRAFTING_TABLE).resistance(8));
+	}
+	
+	public ScarfStaplerBlock(Block.Settings settings) {
+		super(settings);
 	}
 	
 	@Override
@@ -110,6 +118,11 @@ public class ScarfStaplerBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
+	}
+
+	@Override
+	protected MapCodec<ScarfStaplerBlock> getCodec() {
+		return CODEC;
 	}
 	
 	

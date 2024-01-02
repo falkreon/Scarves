@@ -1,5 +1,7 @@
 package blue.endless.scarves;
 
+import com.mojang.serialization.MapCodec;
+
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -30,6 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ScarfTableBlock extends BlockWithEntity {
+	public static final MapCodec<ScarfTableBlock> CODEC = Block.createCodec(ScarfTableBlock::new);
 	public static final String ID = "scarf_table";
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final float PX = 1/16f;
@@ -37,6 +40,10 @@ public class ScarfTableBlock extends BlockWithEntity {
 	
 	protected ScarfTableBlock() {
 		super(FabricBlockSettings.copyOf(Blocks.CRAFTING_TABLE).resistance(8));
+	}
+	
+	protected ScarfTableBlock(Block.Settings settings) {
+		super(settings);
 	}
 	
 	@Override
@@ -122,5 +129,10 @@ public class ScarfTableBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
+	}
+
+	@Override
+	protected MapCodec<ScarfTableBlock> getCodec() {
+		return CODEC;
 	}
 }
