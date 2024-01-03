@@ -1,8 +1,5 @@
 package blue.endless.scarves;
 
-import java.util.List;
-
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;

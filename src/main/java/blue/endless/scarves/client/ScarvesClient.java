@@ -1,8 +1,6 @@
 package blue.endless.scarves.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import blue.endless.scarves.ScarvesBlocks;
 import blue.endless.scarves.ScarvesItems;
@@ -13,8 +11,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.MapColor;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.Entity;
@@ -29,32 +25,6 @@ import net.minecraft.world.LightType;
 public class ScarvesClient implements ClientModInitializer {
 	public static final double SCARF_GRAVITY = -0.01;
 	public static final int UNCOLORED_SCARF_TINT = 0xFF_ddc8ab;
-	
-	private static Map<String, Integer> ALT_COLORS = new HashMap<>();
-	
-	static {
-		ALT_COLORS.put("minecraft:block/white_wool",      Blocks.WHITE_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/orange_wool",     Blocks.ORANGE_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/magenta_wool",    Blocks.MAGENTA_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/light_blue_wool", Blocks.LIGHT_BLUE_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/yellow_wool",     Blocks.YELLOW_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/lime_wool",       Blocks.LIME_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/pink_wool",       Blocks.PINK_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/gray_wool",       Blocks.GRAY_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/light_gray_wool", Blocks.LIGHT_GRAY_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/cyan_wool",       Blocks.CYAN_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/purple_wool",     Blocks.PURPLE_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/blue_wool",       Blocks.BLUE_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/brown_wool",      Blocks.BROWN_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/green_wool",      Blocks.GREEN_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/red_wool",        Blocks.RED_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/black_wool",      Blocks.BLACK_WOOL.getDefaultMapColor().getRenderColor(MapColor.Brightness.NORMAL));
-		ALT_COLORS.put("minecraft:block/water_still",     0xFF_3f51eb);
-		ALT_COLORS.put("minecraft:block/lava_still",      0xFF_ff5100);
-		ALT_COLORS.put("minecraft:block/redstone_block",  0xFF_b50000);
-		ALT_COLORS.put("minecraft:block/glowstone",       0xFF_f6c921);
-		ALT_COLORS.put("minecraft:block/bedrock",         0xFF_4a4a4a);
-	}
 	
 	@Override
 	public void onInitializeClient() {
@@ -78,14 +48,9 @@ public class ScarvesClient implements ClientModInitializer {
 		
 		NbtCompound square = scarf.getCompound(index % scarf.size());
 		
+		int colorHint = (square.contains("ColorHint", NbtElement.INT_TYPE)) ? square.getInt("ColorHint") : 0xFF_FFFFFF;
+		if (colorHint != 0xFF_FFFFFF) return colorHint;
 		int color = (square.contains("Color", NbtElement.INT_TYPE)) ? square.getInt("Color") : 0xFF_FFFFFF;
-		if (color == 0xFF_FFFFFF) {
-			try {
-				String id = square.getString("Id");
-				return ALT_COLORS.getOrDefault(id, 0xFF_FFFFFF);
-			} catch (Throwable t) {}
-		}
-		
 		return color;
 	}
 	

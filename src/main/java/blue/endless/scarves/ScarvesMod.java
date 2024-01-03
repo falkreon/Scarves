@@ -1,15 +1,16 @@
 package blue.endless.scarves;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import blue.endless.scarves.api.ScarvesApi;
 import blue.endless.scarves.api.ScarvesIntegration;
 import blue.endless.scarves.ghost.GhostInventoryNetworking;
+import blue.endless.scarves.integration.StaticDataIntegration;
 import io.github.queerbric.pride.PrideFlag;
 import io.github.queerbric.pride.PrideFlags;
 import net.fabricmc.api.ModInitializer;
@@ -34,7 +35,6 @@ public class ScarvesMod implements ModInitializer {
 	
 	private static final List<ItemStack> creativeScarves = new ArrayList<>();
 	
-	@SuppressWarnings("removal")
 	@Override
 	public void onInitialize() {
 		ITEM_GROUP = FabricItemGroup.builder()
@@ -60,12 +60,13 @@ public class ScarvesMod implements ModInitializer {
 		
 		for (EntrypointContainer<ScarvesIntegration> entrypoint : FabricLoader.getInstance().getEntrypointContainers(MODID, ScarvesIntegration.class)) {
 			try {
-				entrypoint.getEntrypoint().integrateWithScarves();
 				entrypoint.getEntrypoint().integrateWithScarves(ScarvesApi.instance());
 			} catch (Throwable t) {
 				LOGGER.error("Mod '"+entrypoint.getProvider().getMetadata().getId()+"' threw an exception trying to activate Scarves integration.", t);
 			}
 		}
+		
+		StaticDataIntegration.init();
 	}
 	
 	public static void addCreativeScarf(ItemStack scarfItem) {

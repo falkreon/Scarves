@@ -1,0 +1,42 @@
+{
+	/* This file tells Scarves how to turn items into fabric squares.
+	 *
+	 * The keys are item Identifiers - if Scarves sees a valid listing for an item, the Scarf Stapler and Scarf Serger
+	 * will accept them as fabric-square inputs. In this file, all of the inputs are things like "minecraft:white_wool",
+	 * and if the namespace is left out, "minecraft" is implied. So namespaces are skipped here so that it's easier to read.
+	 * 
+	 * This file uses the "simple" version of fabric square info: just a texture from the blocks atlas. This has the
+	 * following effects:
+	 *
+	 * - The color represented on the scarf item in the GUI will be taken from the corresponding block's default MapColor,
+	 *   otherwise it will be white.
+	 *
+	 * - The in-world scarf will have the specified texture, provided that it exists in the atlas. If it's a texture
+	 *   that's actually used on a block or item, it will always be in the atlas. But there's no way for a server to
+	 *   know what's in an atlas, so no checks are made to see if it's right.
+	 *
+	 * - Since fabric squares are smaller than blocks, the fabric square will use the center 8x8 pixels of the texture.
+	 *
+	 * - If the block's default state has luminance >= 8, the fabric square will glow.
+	 *
+	 * - No tint will be applied to the texture. If you need a custom color tint, you'll need to use the more complicated
+	 *   version.
+	 */
+	
+	"white_wool": "minecraft:block/white_wool",
+	"orange_wool": "minecraft:block/orange_wool",
+	"magenta_wool": "minecraft:block/magenta_wool",
+	"light_blue_wool": "minecraft:block/light_blue_wool",
+	"yellow_wool": "minecraft:block/yellow_wool",
+	"lime_wool": "minecraft:block/lime_wool",
+	"pink_wool": "minecraft:block/pink_wool",
+	"gray_wool": "minecraft:block/gray_wool",
+	"light_gray_wool": "minecraft:block/light_gray_wool",
+	"cyan_wool": "minecraft:block/cyan_wool",
+	"purple_wool": "minecraft:block/purple_wool",
+	"blue_wool": "minecraft:block/blue_wool",
+	"brown_wool": "minecraft:block/brown_wool",
+	"green_wool": "minecraft:block/green_wool",
+	"red_wool": "minecraft:block/red_wool",
+	"black_wool": "minecraft:block/black_wool"
+}

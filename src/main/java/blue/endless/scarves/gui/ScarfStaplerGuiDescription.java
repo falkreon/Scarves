@@ -41,17 +41,17 @@ public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
 		root.setInsets(Insets.ROOT_PANEL);
 
 		WItemSlot itemSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.SCARF_SLOT);
-		itemSlot.setFilter(it->it.isOf(ScarvesItems.SCARF));
+		itemSlot.setInputFilter(it->it.isOf(ScarvesItems.SCARF));
 		itemSlot.setIcon(new TextureIcon(SCARF_SLOT_ICON));
 		root.add(itemSlot, 4, 2);
 		
 		WItemSlot leftSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.LEFT_SLOT);
-		leftSlot.setFilter(FabricSquareRegistry::canBeStapled);
+		leftSlot.setInputFilter(FabricSquareRegistry::canBeStapled);
 		leftSlot.setIcon(new TextureIcon(SQUARE_SLOT_ICON));
 		root.add(leftSlot, 2, 2);
 		
 		WItemSlot rightSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.RIGHT_SLOT);
-		rightSlot.setFilter(FabricSquareRegistry::canBeStapled);
+		rightSlot.setInputFilter(FabricSquareRegistry::canBeStapled);
 		rightSlot.setIcon(new TextureIcon(SQUARE_SLOT_ICON));
 		root.add(rightSlot, 6, 2);
 		
@@ -69,7 +69,7 @@ public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
 			TrinketInventory scarfInventory = chestGroup.get("scarf");
 			if (scarfInventory!=null && scarfInventory.size()>0) {
 				WItemSlot playerScarfSlot = WItemSlot.of(scarfInventory, 0);
-				playerScarfSlot.setFilter(it->it.isOf(ScarvesItems.SCARF));
+				playerScarfSlot.setInputFilter(it->it.isOf(ScarvesItems.SCARF));
 				playerScarfSlot.setIcon(new TextureIcon(SCARF_SLOT_ICON));
 				root.add(playerScarfSlot, 0, 4);
 			}

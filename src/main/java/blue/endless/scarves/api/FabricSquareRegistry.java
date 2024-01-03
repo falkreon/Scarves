@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import blue.endless.scarves.ScarvesMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
@@ -21,22 +22,7 @@ public class FabricSquareRegistry {
 	private static Map<ItemConvertible, FabricSquare> entries = new HashMap<>();
 	
 	static {
-		register(Blocks.WHITE_WOOL,      "minecraft:block/white_wool");
-		register(Blocks.ORANGE_WOOL,     "minecraft:block/orange_wool");
-		register(Blocks.MAGENTA_WOOL,    "minecraft:block/magenta_wool");
-		register(Blocks.LIGHT_BLUE_WOOL, "minecraft:block/light_blue_wool");
-		register(Blocks.YELLOW_WOOL,     "minecraft:block/yellow_wool");
-		register(Blocks.LIME_WOOL,       "minecraft:block/lime_wool");
-		register(Blocks.PINK_WOOL,       "minecraft:block/pink_wool");
-		register(Blocks.GRAY_WOOL,       "minecraft:block/gray_wool");
-		register(Blocks.LIGHT_GRAY_WOOL, "minecraft:block/light_gray_wool");
-		register(Blocks.CYAN_WOOL,       "minecraft:block/cyan_wool");
-		register(Blocks.PURPLE_WOOL,     "minecraft:block/purple_wool");
-		register(Blocks.BLUE_WOOL,       "minecraft:block/blue_wool");
-		register(Blocks.BROWN_WOOL,      "minecraft:block/brown_wool");
-		register(Blocks.GREEN_WOOL,      "minecraft:block/green_wool");
-		register(Blocks.RED_WOOL,        "minecraft:block/red_wool");
-		register(Blocks.BLACK_WOOL,      "minecraft:block/black_wool");
+		/*
 		
 		
 		register(Blocks.BEDROCK,         "minecraft:block/bedrock");
@@ -44,10 +30,10 @@ public class FabricSquareRegistry {
 		register(Blocks.PURPUR_BLOCK,    "minecraft:block/purpur_block");
 		register(Blocks.SANDSTONE,       "minecraft:block/sandstone_top");
 		register(Blocks.RED_SANDSTONE,   "minecraft:block/red_sandstone_top");
-		register(Blocks.GLOWSTONE,       "minecraft:block/glowstone");
-		register(Blocks.REDSTONE_BLOCK,  new FabricSquare(new Identifier("minecraft:block/redstone_block"), 4, 4, 0xFF_FFFFFF, true));
-		register(Items.LAVA_BUCKET,      new FabricSquare(new Identifier("minecraft:block/lava_still"), 4, 4, 0xFF_FFFFFF, true));
-		register(Items.WATER_BUCKET,     new FabricSquare(new Identifier("minecraft:block/water_still"), 4, 4, 0xFF_4444FF, false));
+		register(Blocks.GLOWSTONE,       "minecraft:block/glowstone");*/
+		//register(Blocks.REDSTONE_BLOCK,  new FabricSquare(new Identifier("minecraft:block/redstone_block"), 4, 4, 0xFF_FFFFFF, 0xFF_b50000, true));
+		//register(Items.LAVA_BUCKET,      new FabricSquare(new Identifier("minecraft:block/lava_still"), 4, 4, 0xFF_FFFFFF, true));
+		//register(Items.WATER_BUCKET,     new FabricSquare(new Identifier("minecraft:block/water_still"), 4, 4, 0xFF_4444FF, false));
 	}
 	
 	/**
@@ -85,7 +71,7 @@ public class FabricSquareRegistry {
 	 */
 	public static void register(Block block, Identifier texture) {
 		if (block.getDefaultState().getLuminance()>=8) {
-			entries.put(block, new FabricSquare(texture, 4, 4, 0xFF_FFFFFF, true));
+			entries.put(block, new FabricSquare(texture, 4, 4, 0xFF_FFFFFF, 0xFF_FFFFFF, true));
 		} else {
 			entries.put(block, new FabricSquare(texture));
 		}
@@ -180,5 +166,13 @@ public class FabricSquareRegistry {
 				return new NbtList();
 			}
 		}
+	}
+
+	public static void logDump() {
+		ScarvesMod.LOGGER.info("There are "+entries.size()+" entries in the FabricSquareRegistry:");
+		entries.forEach((item, entry) -> {
+			ScarvesMod.LOGGER.info(item + " -> " + entry);
+		});
+		
 	}
 }

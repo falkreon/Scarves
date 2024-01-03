@@ -82,7 +82,7 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 		root.add(repetitionsSlider, 1, 5, 9, 1);
 		
 		WItemSlot scarfSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.SCARF_SLOT);
-		scarfSlot.setFilter(it -> it.isOf(ScarvesItems.SCARF));
+		scarfSlot.setInputFilter(it -> it.isOf(ScarvesItems.SCARF));
 		scarfSlot.setIcon(new TextureIcon(ScarfStaplerGuiDescription.SCARF_SLOT_ICON));
 		root.add(scarfSlot, 5, 7);
 		
@@ -107,7 +107,7 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 			TrinketInventory scarfInventory = chestGroup.get("scarf");
 			if (scarfInventory!=null && scarfInventory.size()>0) {
 				WItemSlot playerScarfSlot = WItemSlot.of(scarfInventory, 0);
-				playerScarfSlot.setFilter(it -> it.isOf(ScarvesItems.SCARF));
+				playerScarfSlot.setInputFilter(it -> it.isOf(ScarvesItems.SCARF));
 				playerScarfSlot.setIcon(new TextureIcon(ScarfStaplerGuiDescription.SCARF_SLOT_ICON));
 				root.add(playerScarfSlot, 0, 7);
 			}

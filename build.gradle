@@ -50,17 +50,19 @@ dependencies {
 	modImplementation include("dev.emi:trinkets:3.8.0") {
 		exclude group: "com.terraformersmc", module: "modmenu"
 	}
-	modLocalRuntime "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0";
-	modLocalRuntime "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0";
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0";
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0";
 	
 	modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
 	modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
 	
 	modImplementation include("io.github.cottonmc:LibGui:${project.libgui_version}")
 	
+	modImplementation include("io.github.cottonmc:Jankson-Fabric:${project.jankson_version}")
+	
 	modImplementation include("io.github.queerbric:pridelib:1.2.0+1.19.4")
 	
-	modImplementation include("gay.debuggy:StaticData:1.1.0+1.20.4")
+	modImplementation include("maven.modrinth:mD4QIZsg:1.1.0+1.20.4")
 }
 
 processResources {

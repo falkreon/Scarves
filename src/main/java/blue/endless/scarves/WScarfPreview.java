@@ -1,7 +1,5 @@
 package blue.endless.scarves;
 
-import java.util.List;
-
 import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.api.FabricSquareRegistry;
 import blue.endless.scarves.ghost.GhostInventory;
@@ -18,10 +16,8 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.math.Vec2f;
 
 public class WScarfPreview extends WWidget {
 	protected int panelSize = 24;

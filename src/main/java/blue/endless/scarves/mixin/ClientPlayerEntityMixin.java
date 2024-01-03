@@ -51,50 +51,47 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements IS
 		
 		TrinketComponent component = TrinketsApi.getTrinketComponent((LivingEntity)(Object) this).orElse(null);
 		if (component !=null) {
-			for(var equipped : component.getEquipped(ScarvesItems.SCARF)) {
+			if (component.getEquipped(ScarvesItems.SCARF).size() == 0) return Stream.empty();
 				
-				if (scarves_leftScarf==null) {
-					scarves_leftScarf = new SimpleScarfAttachment();
-				}
-				if (scarves_rightScarf==null) {
-					scarves_rightScarf = new SimpleScarfAttachment();
-				}
-				
-				Vec3d planarLookVec = Vec3d.fromPolar(0, getYaw());
-				Vec3d upVec = new Vec3d(0, 1, 0);
-				Vec3d rightVec = planarLookVec.crossProduct(upVec);
-				
-				EntityPose pose = getPose();
-				
-				double posedEyeHeight = this.getEyeHeight(getPose()) - 0.4;
-				Vec3d referencePos = new Vec3d(0, posedEyeHeight, 0);
-				
-				if (!(this.getClass().equals(ClientPlayerEntity.class) && MinecraftClient.getInstance().options.getPerspective().isFirstPerson())) {
-					if (pose==EntityPose.FALL_FLYING) {
-						Vec3d lookVec = Vec3d.fromPolar(getPitch(), scarves$getBodyYaw(delta));
-						referencePos = referencePos.add(lookVec.multiply(1.5));
-					} else if (pose==EntityPose.SWIMMING) { 
-						Vec3d lookVec = Vec3d.fromPolar(getPitch(), scarves$getBodyYaw(delta));
-						referencePos = referencePos.add(lookVec.multiply(0.7)).add(0, 0.25, 0);
-					}
-				}
-				
-				final boolean tickDeprived = (getEntityWorld() == null) ?
-						false :
-						engination_isTickDeprived(getEntityWorld().getTime());
-				
-				if (tickDeprived) {
-					scarves_leftScarf.setLocation(this.getPos().add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
-					scarves_rightScarf.setLocation(this.getPos().add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
-				} else {
-					scarves_leftScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
-					scarves_rightScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
-				}
-				
-				return Stream.of(scarves_leftScarf, scarves_rightScarf);
+			if (scarves_leftScarf==null) {
+				scarves_leftScarf = new SimpleScarfAttachment();
+			}
+			if (scarves_rightScarf==null) {
+				scarves_rightScarf = new SimpleScarfAttachment();
 			}
 			
-			return Stream.empty();
+			Vec3d planarLookVec = Vec3d.fromPolar(0, getYaw());
+			Vec3d upVec = new Vec3d(0, 1, 0);
+			Vec3d rightVec = planarLookVec.crossProduct(upVec);
+			
+			EntityPose pose = getPose();
+			
+			double posedEyeHeight = this.getEyeHeight(getPose()) - 0.4;
+			Vec3d referencePos = new Vec3d(0, posedEyeHeight, 0);
+			
+			if (!(this.getClass().equals(ClientPlayerEntity.class) && MinecraftClient.getInstance().options.getPerspective().isFirstPerson())) {
+				if (pose==EntityPose.FALL_FLYING) {
+					Vec3d lookVec = Vec3d.fromPolar(getPitch(), scarves$getBodyYaw(delta));
+					referencePos = referencePos.add(lookVec.multiply(1.5));
+				} else if (pose==EntityPose.SWIMMING) { 
+					Vec3d lookVec = Vec3d.fromPolar(getPitch(), scarves$getBodyYaw(delta));
+					referencePos = referencePos.add(lookVec.multiply(0.7)).add(0, 0.25, 0);
+				}
+			}
+			
+			final boolean tickDeprived = (getEntityWorld() == null) ?
+					false :
+					engination_isTickDeprived(getEntityWorld().getTime());
+			
+			if (tickDeprived) {
+				scarves_leftScarf.setLocation(this.getPos().add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+				scarves_rightScarf.setLocation(this.getPos().add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+			} else {
+				scarves_leftScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(-SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+				scarves_rightScarf.setLocation(this.getLerpedPos(delta).add(referencePos).add(rightVec.multiply(SCARF_TAIL_SEPARATION)).add(planarLookVec.multiply(-0.25)));
+			}
+			
+			return Stream.of(scarves_leftScarf, scarves_rightScarf);
 		} else {
 			return Stream.empty();
 		}

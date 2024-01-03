@@ -1,0 +1,55 @@
+{
+	/* This file tells Scarves how to turn items into fabric squares.
+	 *
+	 * The keys are item Identifiers - if Scarves sees a valid listing for an item, the Scarf Stapler and Scarf Serger
+	 * will accept them as fabric-square inputs. In this file, all of the inputs are things like "minecraft:white_wool",
+	 * and if the namespace is left out, "minecraft" is implied. So namespaces are skipped here so that it's easier to read.
+	 *
+	 * This file uses a combination of "simple" and "full" descriptions. Using a full json object, you have full control
+	 * over every adjustable aspect of the square.
+	 *
+	 * - "texture" MUST be an Identifier for a texture in the blocks/items atlas.
+	 *
+	 * - "x" and "y" are offsets into the texture. "4,4" will cause the 8px by 8px fabric square to use the middle of the
+	 *   texture. "0,0" will use the top left. "4, 8" will use the bottom middle. Any coordinates over 8 will cause
+	 *   unusual texture atlas spill.
+	 *
+	 * - "color" will tint the texture. If you don't want to tint, use "#FFF" or skip the key.
+	 *
+	 * - "color_hint" affects the color which appears on the scarf item in guis.
+	 *
+	 * - "emissive" makes the scarf render bright in dark areas, and may in some shaders cause it to really glow.
+	 */
+	
+	
+	"bedrock": "minecraft:block/bedrock",
+	"prismarine": "minecraft:block/prismarine",
+	"purpur_block": "minecraft:block/purpur_block",
+	"sandstone": "minecraft:block/sandstone_top",
+	"red_sandstone": "minecraft:block/red_sandstone_top",
+	"glowstone": "minecraft:block/glowstone",
+	"redstone_block": {
+		"texture": "minecraft:block/redstone_block",
+		"x": 4,
+		"y": 4,
+		"color": "#FFF",
+		"color_hint": "#b50000",
+		"emissive": true
+	},
+	"lava_bucket": {
+		"texture": "minecraft:block/lava_still",
+		"x": 4,
+		"y": 4,
+		"color": "#FFF",
+		"color_hint": "#ef6210",
+		"emissive": true
+	},
+	"water_bucket": {
+		"texture": "minecraft:block/water_still",
+		"x": 4,
+		"y": 4,
+		"color": "#104bef",
+		"color_hint": "#104bef",
+		"emissive": false
+	}
+}
