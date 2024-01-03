@@ -22,7 +22,6 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
-	mavenLocal();
 	maven {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/"
