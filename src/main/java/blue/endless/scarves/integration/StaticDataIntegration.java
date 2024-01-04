@@ -1,5 +1,7 @@
 package blue.endless.scarves.integration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import blue.endless.jankson.Jankson;
@@ -10,30 +12,53 @@ import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.api.FabricSquareRegistry;
 import gay.debuggy.staticdata.api.StaticData;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.minecraft.block.MapColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public class StaticDataIntegration {
+	private static Map<Identifier, JsonElement> deferrals = new HashMap<>();
+	
 	public static void init() {
 		Jankson jankson = Jankson.builder().build();
 		for(var dataItem : StaticData.getDataInDirectory(new Identifier("scarves:fabric_squares"), true)) {
 			try {
 				JsonElement elem = jankson.loadElement(dataItem.getAsStream());
 				if (elem instanceof JsonObject obj) {
-					obj.forEach((itemId, squareSpec) -> {
-						Item item = Registries.ITEM.get(new Identifier(itemId));
-						getFabricSquare(squareSpec, getColorHint(item), getDefaultEmissive(item)).ifPresent(square -> {
-							FabricSquareRegistry.register(item, square);
-						});
+					obj.forEach((itemIdString, squareSpec) -> {
+						Identifier itemId = new Identifier(itemIdString);
+						Item item = Registries.ITEM.get(itemId);
+						if (item == null || item == Items.AIR) {
+							//defer
+							deferrals.put(itemId, squareSpec);
+						} else {
+							getFabricSquare(squareSpec, getColorHint(item), getDefaultEmissive(item)).ifPresent(square -> {
+								FabricSquareRegistry.register(item, square);
+							});
+						}
 					});
 				}
 			} catch (Throwable t) {
 				ScarvesMod.LOGGER.error("Could not load static data \"" + dataItem.getResourceId() + "\"", t);
 			}
 		}
+		
+		RegistryEntryAddedCallback.event(Registries.ITEM).register((rawId, id, item) -> {
+			JsonElement elem = deferrals.remove(id);
+			if (elem == null) return;
+			
+			try {
+				getFabricSquare(elem, getColorHint(item), getDefaultEmissive(item)).ifPresent(square -> {
+					FabricSquareRegistry.register(item, square);
+				});
+			} catch (Throwable t) {
+				ScarvesMod.LOGGER.error("Could not load static data for deferred item \"" + id + "\"", t);
+			}
+		});
 	}
 	
 	public static Optional<FabricSquare> getFabricSquare(JsonElement elem, int defaultColor, boolean defaultEmissive) {
