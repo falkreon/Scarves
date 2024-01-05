@@ -51,5 +51,12 @@
 		"color": "#104bef",
 		"color_hint": "#104bef",
 		"emissive": false
+	},
+	"cobweb": "minecraft:block/cobweb",
+	"iron_bars": {
+		"texture": "minecraft:block/iron_bars",
+		"x": 1,
+		"y": 1,
+		"color_hint": "#777"
 	}
 }
