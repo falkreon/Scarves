@@ -25,6 +25,7 @@ import io.github.cottonmc.cotton.gui.networking.NetworkSide;
 import io.github.cottonmc.cotton.gui.networking.ScreenNetworking;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
 import io.github.cottonmc.cotton.gui.widget.WPlainPanel;
+import io.github.cottonmc.cotton.gui.widget.WSprite;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WButton;
 import io.github.cottonmc.cotton.gui.widget.WLabeledSlider;
@@ -83,17 +84,24 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 		repetitionsSlider.setValue(6, false);
 		root.add(repetitionsSlider, 1, 5, 9, 1);
 		
-		WItemSlot scarfSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.SCARF_SLOT);
-		scarfSlot.setInputFilter(it -> it.isOf(ScarvesItems.SCARF));
-		scarfSlot.setIcon(new TextureIcon(ScarfStaplerGuiDescription.SCARF_SLOT_ICON));
-		root.add(scarfSlot, 5, 7);
-		
 		applyLeftButton.setOnClick(() -> {
 			ScreenNetworking.of(this, NetworkSide.CLIENT).send(ApplyMessage.ID, ApplyMessage.CODEC, new ApplyMessage(patternSizeSlider.getValue(), repetitionsSlider.getValue()));
 		});
 		
-		root.add(applyLeftButton, 1, 7, 4, 1);
+		root.add(applyLeftButton, 4, 7, 4, 1);
 		
+		WSprite arrow = new WSprite(Identifier.of("scarves", "textures/gui/right_arrow.png"));
+		arrow.setSize(10, 9);
+		root.add(arrow, 8, 7);
+		
+		WItemSlot scarfSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.SCARF_SLOT);
+		scarfSlot.setInputFilter(it -> it.isOf(ScarvesItems.SCARF));
+		scarfSlot.setIcon(new TextureIcon(ScarfStaplerGuiDescription.SCARF_SLOT_ICON));
+		root.add(scarfSlot, 9, 7);
+		
+		
+		
+		/*
 		Map<String, Map<String, TrinketInventory>> inventoryMap = TrinketsApi.getTrinketComponent(playerInventory.player).get().getInventory();
 		Map<String, TrinketInventory> chestGroup = inventoryMap.get("chest");
 		if (chestGroup!=null) {
@@ -104,9 +112,10 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 				playerScarfSlot.setIcon(new TextureIcon(ScarfStaplerGuiDescription.SCARF_SLOT_ICON));
 				root.add(playerScarfSlot, 0, 7);
 			}
-		}
+		}*/
+		ScarfStaplerGuiDescription.addScarfSlots(root, playerInventory, 0, 7);
 		
-		root.add(this.createPlayerInventoryPanel(), 1, 9);
+		root.add(this.createPlayerInventoryPanel(), 1, 8);
 
 		root.validate(this);
 	}

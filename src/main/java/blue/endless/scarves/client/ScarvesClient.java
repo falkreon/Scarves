@@ -45,7 +45,7 @@ public class ScarvesClient implements ClientModInitializer {
 		
 		FabricSquare square = design.squares().get(index % design.squares().size());
 		
-		return square.colorHint();
+		return square.colorHint() | 0xFF_000000;
 	}
 	
 	
