@@ -7,17 +7,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import blue.endless.scarves.api.ScarvesApi;
-import blue.endless.scarves.api.ScarvesIntegration;
+import blue.endless.scarves.api.FabricSquareRegistry;
+import blue.endless.scarves.api.ScarfDesign;
 import blue.endless.scarves.ghost.GhostInventoryNetworking;
 import blue.endless.scarves.integration.StaticDataIntegration;
 import io.github.queerbric.pride.PrideFlag;
 import io.github.queerbric.pride.PrideFlags;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -29,7 +29,7 @@ public class ScarvesMod implements ModInitializer {
 	public static final String MODID = "scarves";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Scarves");
 	
-	public static final Identifier GHOST_SLOT_MESSAGE = new Identifier(MODID, "ghost");
+	public static final Identifier GHOST_SLOT_MESSAGE = Identifier.of(MODID, "ghost");
 	
 	public static ItemGroup ITEM_GROUP;
 	
@@ -37,6 +37,8 @@ public class ScarvesMod implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
+		Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(MODID, "scarf"), ScarfDesign.COMPONENT);
+		
 		ITEM_GROUP = FabricItemGroup.builder()
 			.displayName(Text.literal("Scarves"))
 			.icon(()->new ItemStack(ScarvesItems.SCARF))
@@ -49,24 +51,16 @@ public class ScarvesMod implements ModInitializer {
 				for(ItemStack stack : creativeScarves) entries.add(stack);
 			})
 			.build();
-		Registry.register(Registries.ITEM_GROUP, new Identifier(MODID, "general"), ITEM_GROUP);
+		Registry.register(Registries.ITEM_GROUP, Identifier.of(MODID, "general"), ITEM_GROUP);
 		
 		ScarvesBlocks.register();
 		ScarvesItems.register();
 		
-		//TODO: I'd love to use static data to load in custom scarves squares but I can't.
-		
 		GhostInventoryNetworking.init();
 		
-		for (EntrypointContainer<ScarvesIntegration> entrypoint : FabricLoader.getInstance().getEntrypointContainers(MODID, ScarvesIntegration.class)) {
-			try {
-				entrypoint.getEntrypoint().integrateWithScarves(ScarvesApi.instance());
-			} catch (Throwable t) {
-				LOGGER.error("Mod '"+entrypoint.getProvider().getMetadata().getId()+"' threw an exception trying to activate Scarves integration.", t);
-			}
-		}
-		
 		StaticDataIntegration.init();
+		
+		FabricSquareRegistry.init();
 	}
 	
 	public static void addCreativeScarf(ItemStack scarfItem) {
@@ -83,26 +77,17 @@ public class ScarvesMod implements ModInitializer {
 			if (reps < 1) reps = 1;
 			int flagLength = flag.getColors().size() * reps;
 			
-			ItemStack scarf = ScarfItem.createScarf(flag, flagLength, flag, 0);
+			ItemStack scarf = new ItemStack(ScarvesItems.SCARF);
+			scarf.set(ScarfDesign.COMPONENT, ScarfItem.createScarf(flag, flagLength));
 			
 			//Create name
 			String flagKey = "flag.pridelib."+flag.getId();
 			Text flagName = (I18n.hasTranslation(flagKey)) ? Text.translatable(flagKey) : Text.literal(StringUtils.capitalize(flag.getId()));
 			
 			Text name = Text.translatable("item.scarves.scarf.named", flagName);
-			scarf = ScarfItem.setName(scarf, name);
+			scarf.set(DataComponentTypes.CUSTOM_NAME, name);
 			
 			entries.add(scarf);
-		}
-		
-		PrideFlag biFlag = PrideFlags.getFlag("bisexual");
-		PrideFlag panFlag = PrideFlags.getFlag("pansexual");
-		if (biFlag!=null && panFlag!=null) {
-			ItemStack biPanScarf = ScarfItem.createScarf(biFlag, 30, panFlag, 15);
-			Text biPanName = Text.literal(StringUtils.capitalize("Bi/Pan"));
-			Text name = Text.translatable("item.scarves.scarf.named", biPanName);
-			biPanScarf = ScarfItem.setName(biPanScarf, name);
-			entries.add(biPanScarf);
 		}
 	}
 }

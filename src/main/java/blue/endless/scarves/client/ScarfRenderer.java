@@ -1,6 +1,7 @@
 package blue.endless.scarves.client;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.api.FabricSquare;
@@ -26,18 +27,18 @@ public class ScarfRenderer {
 		VertexConsumer buf = vertexConsumers.getBuffer(RenderLayer.getCutoutMipped());
 		Matrix4f matrix = matrices.peek().getPositionMatrix();
 		
-		buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(color).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-		buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(color).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-		buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(color).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-		buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(color).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+		buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(color).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
+		buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(color).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
+		buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(color).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
+		buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(color).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
 		
 		normal = normal.multiply(-1);
 		
 		if (doubleSided) {
-			buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(color).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-			buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(color).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-			buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(color).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
-			buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(color).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z).next();
+			buf.vertex(matrix, (float) d.x, (float) d.y, (float) d.z).color(color).texture(texD.x, texD.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
+			buf.vertex(matrix, (float) c.x, (float) c.y, (float) c.z).color(color).texture(texC.x, texC.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
+			buf.vertex(matrix, (float) b.x, (float) b.y, (float) b.z).color(color).texture(texB.x, texB.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
+			buf.vertex(matrix, (float) a.x, (float) a.y, (float) a.z).color(color).texture(texA.x, texA.y).light(light).normal((float) normal.x, (float) normal.y, (float) normal.z);
 		}
 	}
 	
@@ -71,5 +72,15 @@ public class ScarfRenderer {
 		} else {
 			ScarvesMod.LOGGER.error("Block Atlas Texture isn't a block atlas");
 		}
+	}
+	
+	public static void quad(Vector4f a, Vector4f b, Vector4f c, Vector4f d, FabricSquare square, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int light) {
+		quad(
+				new Vec3d(a.x, a.y, a.z),
+				new Vec3d(b.x, b.y, b.z),
+				new Vec3d(c.x, c.y, c.z),
+				new Vec3d(d.x, d.y, d.z),
+				square, vertexConsumers, matrices, light
+				);
 	}
 }

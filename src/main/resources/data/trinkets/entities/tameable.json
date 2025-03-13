@@ -1,0 +1,9 @@
+{
+  "entities": [
+    "donkey", "horse", "llama", "mule", "cat", "parrot", "wolf", "camel", "pig", "fox", "bee"
+  ],
+
+  "slots": [
+    "head/left_scarf"
+  ]
+}

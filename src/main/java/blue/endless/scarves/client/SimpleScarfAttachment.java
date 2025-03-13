@@ -3,11 +3,13 @@ package blue.endless.scarves.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import blue.endless.scarves.api.ScarfDesign;
 import net.minecraft.util.math.Vec3d;
 
 public class SimpleScarfAttachment implements ScarfAttachment {
 	protected Vec3d location = new Vec3d(0,0,0);
 	protected final ArrayList<ScarfNode> nodes = new ArrayList<>();
+	protected ScarfDesign design = null;
 	
 	@Override
 	public Vec3d getLocation() {
@@ -25,5 +27,13 @@ public class SimpleScarfAttachment implements ScarfAttachment {
 	
 	public void setLocation(Vec3d v) {
 		location = v;
+	}
+	
+	public ScarfDesign getDesign() {
+		return design;
+	}
+	
+	public void setDesign(ScarfDesign design) {
+		this.design = design;
 	}
 }

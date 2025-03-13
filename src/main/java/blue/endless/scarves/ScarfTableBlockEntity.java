@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import blue.endless.scarves.api.FabricSquare;
-import blue.endless.scarves.api.FabricSquareRegistry;
+import blue.endless.scarves.api.RepeatType;
+import blue.endless.scarves.api.ScarfDesign;
 import blue.endless.scarves.ghost.ImplementedGhostInventory;
 import blue.endless.scarves.gui.ScarfTableGuiDescription;
 import blue.endless.scarves.util.ImplementedInventory;
@@ -16,6 +17,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -42,7 +44,7 @@ public class ScarfTableBlockEntity extends BlockEntity implements ImplementedInv
 		for(int i=0; i<count; i++) {
 			ItemStack ghostItem = ghostItems.get(i);
 			if (ghostItem.isEmpty()) continue;
-			FabricSquare square = FabricSquareRegistry.forItem(ghostItem);
+			FabricSquare square = ghostItem.get(FabricSquare.COMPONENT);
 			if (square != null) result.add(square);
 		}
 		
@@ -63,27 +65,14 @@ public class ScarfTableBlockEntity extends BlockEntity implements ImplementedInv
 		return list;
 	}
 	
-	public void applyLeft(int patternLength, int repetitions) {
+	public void applyPattern(int patternLength, int repetitions) {
 		ItemStack scarfStack = this.inventory.get(0);
 		if (scarfStack.isEmpty()) return;
 		
-		NbtList appliedPattern = getAppliedPattern(patternLength, repetitions);
+		List<FabricSquare> pattern = getGhostPattern(patternLength);
+		ScarfDesign component = new ScarfDesign(RepeatType.FROM_START, repetitions, pattern);
 		
-		NbtCompound tag = scarfStack.getOrCreateNbt();
-		tag.put("LeftScarf", appliedPattern);
-		
-		this.setStack(0, scarfStack);
-		this.markDirty();
-	}
-	
-	public void applyRight(int patternLength, int repetitions) {
-		ItemStack scarfStack = this.inventory.get(0);
-		if (scarfStack.isEmpty()) return;
-		
-		NbtList appliedPattern = getAppliedPattern(patternLength, repetitions);
-		
-		NbtCompound tag = scarfStack.getOrCreateNbt();
-		tag.put("RightScarf", appliedPattern);
+		scarfStack.set(ScarfDesign.COMPONENT, component);
 		
 		this.setStack(0, scarfStack);
 		this.markDirty();
@@ -100,19 +89,19 @@ public class ScarfTableBlockEntity extends BlockEntity implements ImplementedInv
 	}
 	
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		Inventories.readNbt(nbt, inventory);
-		readGhostItems(nbt);
+	protected void readNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+		Inventories.readNbt(nbt, inventory, registryLookup);
+		readGhostItems(nbt, registryLookup);
 		
-		super.readNbt(nbt);
+		super.readNbt(nbt, registryLookup);
 	}
 	
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		Inventories.writeNbt(nbt, inventory);
-		writeGhostItems(nbt);
+	protected void writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+		Inventories.writeNbt(nbt, inventory, registryLookup);
+		writeGhostItems(nbt, registryLookup);
 		
-		super.writeNbt(nbt);
+		super.writeNbt(nbt, registryLookup);
 	}
 	
 	public void setCustomName(Text name) {

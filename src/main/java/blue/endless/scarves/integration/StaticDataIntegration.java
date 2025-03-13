@@ -25,12 +25,12 @@ public class StaticDataIntegration {
 	
 	public static void init() {
 		Jankson jankson = Jankson.builder().build();
-		for(var dataItem : StaticData.getDataInDirectory(new Identifier("scarves:fabric_squares"), true)) {
+		for(var dataItem : StaticData.getDataInDirectory(Identifier.of("scarves:fabric_squares"), true)) {
 			try {
 				JsonElement elem = jankson.loadElement(dataItem.getAsStream());
 				if (elem instanceof JsonObject obj) {
 					obj.forEach((itemIdString, squareSpec) -> {
-						Identifier itemId = new Identifier(itemIdString);
+						Identifier itemId = Identifier.of(itemIdString);
 						Item item = Registries.ITEM.get(itemId);
 						if (item == null || item == Items.AIR) {
 							//defer
@@ -64,9 +64,9 @@ public class StaticDataIntegration {
 	public static Optional<FabricSquare> getFabricSquare(JsonElement elem, int defaultColor, boolean defaultEmissive) {
 		if (elem instanceof JsonPrimitive prim) {
 			if (prim.getValue() instanceof String str) {
-				return Optional.of(new FabricSquare(new Identifier(str), 4, 4, 0xFF_FFFFFF, defaultColor, defaultEmissive));
+				return Optional.of(new FabricSquare(Identifier.of(str), 4, 4, 0xFF_FFFFFF, defaultColor, defaultEmissive));
 			} else if (prim.getValue() instanceof Long l) {
-				return Optional.of(new FabricSquare(new Identifier("minecraft:block/white_wool"), 4, 4, l.intValue(), l.intValue(), defaultEmissive));
+				return Optional.of(new FabricSquare(Identifier.of("minecraft:block/white_wool"), 4, 4, l.intValue(), l.intValue(), defaultEmissive));
 			} else {
 				return Optional.empty();
 			}
@@ -79,7 +79,7 @@ public class StaticDataIntegration {
 			int colorHint = parseColor(obj.get("color_hint"), defaultColor);
 			boolean emissive = obj.getBoolean("emissive", defaultEmissive);
 			
-			return Optional.of(new FabricSquare(new Identifier(textureId), xofs, yofs, color, colorHint, emissive));
+			return Optional.of(new FabricSquare(Identifier.of(textureId), xofs, yofs, color, colorHint, emissive));
 		} else {
 			return Optional.empty();
 		}

@@ -18,21 +18,20 @@ import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.icon.TextureIcon;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
-	public static final Identifier SCARF_SLOT_ICON = new Identifier(ScarvesMod.MODID, "textures/gui/slots/scarf.png");
-	public static final Identifier SQUARE_SLOT_ICON = new Identifier(ScarvesMod.MODID, "textures/gui/slots/square.png");
-	public static final Identifier STAPLE_MESSAGE = new Identifier(ScarvesMod.MODID, "ok_staple");
+	public static final Identifier SCARF_SLOT_ICON = Identifier.of(ScarvesMod.MODID, "textures/gui/slots/scarf.png");
+	public static final Identifier SQUARE_SLOT_ICON = Identifier.of(ScarvesMod.MODID, "textures/gui/slots/square.png");
+	public static final Identifier STAPLE_MESSAGE = Identifier.of(ScarvesMod.MODID, "ok_staple");
 	
 	public ScarfStaplerGuiDescription(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(ScarvesBlocks.SCARF_STAPLER_SCREEN_HANDLER, syncId, playerInventory, getBlockInventory(context, 3), getBlockPropertyDelegate(context));
 		
 		//Register the staple message
-		ScreenNetworking.of(this, NetworkSide.SERVER).receive(STAPLE_MESSAGE, this::staple);
+		ScreenNetworking.of(this, NetworkSide.SERVER).receive(STAPLE_MESSAGE, Identifier.CODEC, this::staple);
 		
 		WGridPanel root = new WGridPanel();
 		setRootPanel(root);
@@ -50,23 +49,18 @@ public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
 		leftSlot.setIcon(new TextureIcon(SQUARE_SLOT_ICON));
 		root.add(leftSlot, 2, 2);
 		
-		WItemSlot rightSlot = WItemSlot.of(blockInventory, ScarfStaplerBlockEntity.RIGHT_SLOT);
-		rightSlot.setInputFilter(FabricSquareRegistry::canBeStapled);
-		rightSlot.setIcon(new TextureIcon(SQUARE_SLOT_ICON));
-		root.add(rightSlot, 6, 2);
-		
 		WButton stapleButton = new WButton(Text.translatable("gui.scarves.staple"));
 		stapleButton.setOnClick(()->{
-			ScreenNetworking.of(this, NetworkSide.CLIENT).send(STAPLE_MESSAGE, buf->{});
+			ScreenNetworking.of(this, NetworkSide.CLIENT).send(STAPLE_MESSAGE, Identifier.CODEC, STAPLE_MESSAGE);
 		});
 		root.add(stapleButton, 2, 3, 5, 1);
 
 		root.add(this.createPlayerInventoryPanel(), 0, 5);
 		
 		Map<String, Map<String, TrinketInventory>> inventoryMap = TrinketsApi.getTrinketComponent(playerInventory.player).get().getInventory();
-		Map<String, TrinketInventory> chestGroup = inventoryMap.get("chest");
-		if (chestGroup!=null) {
-			TrinketInventory scarfInventory = chestGroup.get("scarf");
+		Map<String, TrinketInventory> headGroup = inventoryMap.get("head");
+		if (headGroup!=null) {
+			TrinketInventory scarfInventory = headGroup.get("left_scarf");
 			if (scarfInventory!=null && scarfInventory.size()>0) {
 				WItemSlot playerScarfSlot = WItemSlot.of(scarfInventory, 0);
 				playerScarfSlot.setInputFilter(it->it.isOf(ScarvesItems.SCARF));
@@ -78,7 +72,7 @@ public class ScarfStaplerGuiDescription  extends SyncedGuiDescription{
 		root.validate(this);
 	}
 	
-	public void staple(PacketByteBuf buf) {
+	public void staple(Identifier id) {
 		if (this.blockInventory instanceof ScarfStaplerBlockEntity entity) {
 			entity.staple();
 		}

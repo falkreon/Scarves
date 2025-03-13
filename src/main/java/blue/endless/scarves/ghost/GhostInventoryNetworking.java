@@ -4,27 +4,28 @@ import blue.endless.scarves.ScarvesMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 public class GhostInventoryNetworking {
+	
 	public static void init() {
-		ServerPlayNetworking.registerGlobalReceiver(ScarvesMod.GHOST_SLOT_MESSAGE, (server, player, handler, buf, sender) -> {
-			// Get data from the packet
-			final int itemSlot = buf.readVarInt();
-			final NbtCompound stackData = buf.readNbt();
+		PayloadTypeRegistry.playC2S().register(Payload.ID, Payload.CODEC);
+		
+		ServerPlayNetworking.registerGlobalReceiver(Payload.ID, (payload, context) -> {
+			if (payload.slot() < 0) return;
 			
-			//Swap to server thread
-			server.execute(() -> {
-				
-				//Unpack data with server-specific values and pour it in
-				ItemStack stack = ItemStack.fromNbt(stackData);
-				if (player.currentScreenHandler instanceof GhostInventoryHolder gui) {
-					gui.getGhostInventory().setGhostItem(itemSlot, stack);
+			context.server().execute(() -> {
+				System.out.println("Received Ghost on server: "+payload.slot+" -> "+payload.stack.toString());
+				if (context.player().currentScreenHandler instanceof GhostInventoryHolder gui) {
+					gui.getGhostInventory().setGhostItem(payload.slot(), payload.stack());
 					gui.getGhostInventory().markDirty();
 				}
 			});
@@ -33,18 +34,14 @@ public class GhostInventoryNetworking {
 	
 	@Environment(EnvType.CLIENT)
 	public static void initClient() {
-		ClientPlayNetworking.registerGlobalReceiver(ScarvesMod.GHOST_SLOT_MESSAGE, (client, handler, buf, sender) -> {
-			// Get data from the packet
-			final int itemSlot = buf.readVarInt();
-			final NbtCompound stackData = buf.readNbt();
+		PayloadTypeRegistry.playS2C().register(Payload.ID, Payload.CODEC);
+		ClientPlayNetworking.registerGlobalReceiver(Payload.ID, (payload, context) -> {
+			System.out.println("Received Ghost on client: "+payload.slot+" -> "+payload.stack.toString());
+			if (payload.slot() < 0) return;
 			
-			//Swap to client thread
-			client.execute(() -> {
-				
-				//Unpack data with client-specific values and pour it in
-				ItemStack stack = ItemStack.fromNbt(stackData);
-				if (client.player.currentScreenHandler instanceof GhostInventoryHolder gui) {
-					gui.getGhostInventory().setGhostItem(itemSlot, stack);
+			context.client().execute(() -> {
+				if (context.player().currentScreenHandler instanceof GhostInventoryHolder gui) {
+					gui.getGhostInventory().setGhostItem(payload.slot(), payload.stack());
 					gui.getGhostInventory().markDirty();
 				}
 			});
@@ -52,18 +49,30 @@ public class GhostInventoryNetworking {
 	}
 	
 	public static void sendGhostItemToClient(ServerPlayerEntity player, int slot, ItemStack stack) {
-		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeVarInt(slot);
-		buf.writeNbt(stack.writeNbt(new NbtCompound()));
-		ServerPlayNetworking.send(player, ScarvesMod.GHOST_SLOT_MESSAGE, buf);
+		ServerPlayNetworking.send(player, new Payload(slot, stack));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static void sendGhostItemToServer(int slot, ItemStack stack) {
-		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeVarInt(slot);
-		buf.writeNbt(stack.writeNbt(new NbtCompound()));
+		ClientPlayNetworking.send(new Payload(slot, stack));
+	}
+	
+	public static record Payload(int slot, ItemStack stack) implements CustomPayload {
+		public static final CustomPayload.Id<Payload> ID = new CustomPayload.Id<>(Identifier.of(ScarvesMod.MODID, "ghost_slot"));
+		public static final PacketCodec<RegistryByteBuf, Payload> CODEC = PacketCodec.of(Payload::write, Payload::new);
 		
-		ClientPlayNetworking.send(ScarvesMod.GHOST_SLOT_MESSAGE, buf);
+		@Override
+		public Id<? extends CustomPayload> getId() {
+			return ID;
+		}
+		
+		public Payload(RegistryByteBuf buf) {
+			this(PacketCodecs.VAR_INT.decode(buf), ItemStack.OPTIONAL_PACKET_CODEC.decode(buf));
+		}
+		
+		public void write(RegistryByteBuf buf) {
+			PacketCodecs.VAR_INT.encode(buf, slot);
+			ItemStack.OPTIONAL_PACKET_CODEC.encode(buf, stack);
+		}
 	}
 }

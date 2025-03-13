@@ -4,12 +4,16 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import blue.endless.scarves.ScarfStaplerBlockEntity;
 import blue.endless.scarves.ScarfTableBlockEntity;
 import blue.endless.scarves.ScarvesBlocks;
 import blue.endless.scarves.ScarvesItems;
 import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.WScarfPreview;
+import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.api.FabricSquareRegistry;
 import blue.endless.scarves.ghost.GhostInventory;
 import blue.endless.scarves.ghost.GhostInventoryHolder;
@@ -29,25 +33,24 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.icon.TextureIcon;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.Codecs;
 
 public class ScarfTableGuiDescription extends SyncedGuiDescription implements GhostInventoryHolder {
-	public static final Identifier APPLY_LEFT_MESSAGE = new Identifier(ScarvesMod.MODID, "apply_left");
-	public static final Identifier APPLY_RIGHT_MESSAGE = new Identifier(ScarvesMod.MODID, "apply_right");
-	
 	@Nullable
 	private ScarfTableBlockEntity blockEntity = null;
 	private GhostInventory ghostInventory = GhostInventory.ofSize(8);
 	private WPlainPanel bobbinPanel = new WPlainPanel();
 	private WLabeledSlider patternSizeSlider = new WLabeledSlider(1, 8, Axis.HORIZONTAL, Text.translatable("gui.scarves.pattern_length", 8));
 	private WLabeledSlider repetitionsSlider = new WLabeledSlider(1, 24, Axis.HORIZONTAL, Text.translatable("gui.scarves.repetitions", 6));
-	private WButton applyLeftButton = new WButton(Text.translatable("gui.scarves.apply_left"));
-	private WButton applyRightButton = new WButton(Text.translatable("gui.scarves.apply_right"));
+	private WButton applyLeftButton = new WButton(Text.translatable("gui.scarves.apply"));
 	
 	public ScarfTableGuiDescription(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(ScarvesBlocks.SCARF_TABLE_SCREEN_HANDLER, syncId, playerInventory, getBlockInventory(context, 10), null);
+		
 		context.run((world, pos) -> {
 			world.getBlockEntity(pos, ScarvesBlocks.SCARF_TABLE_ENTITY).ifPresent(it -> {
 				blockEntity = it;
@@ -55,8 +58,7 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 			});
 		});
 		
-		ScreenNetworking.of(this, NetworkSide.SERVER).receive(APPLY_LEFT_MESSAGE, this::applyLeft);
-		ScreenNetworking.of(this, NetworkSide.SERVER).receive(APPLY_RIGHT_MESSAGE, this::applyRight);
+		ScreenNetworking.of(this, NetworkSide.SERVER).<ApplyMessage>receive(ApplyMessage.ID, ApplyMessage.CODEC, this::apply);
 		
 		WGridPanel root = new WGridPanel();
 		setRootPanel(root);
@@ -68,7 +70,7 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 		
 		for(int i=0; i<8; i++) {
 			WGhostSlot ghostSlot = new WGhostSlot(ghostInventory, i);
-			ghostSlot.setFilter(FabricSquareRegistry::canBeStapled);
+			ghostSlot.setFilter((it) -> it.get(FabricSquare.COMPONENT) != null);
 			bobbinPanel.add(ghostSlot, 6 + (i * 24), 25);
 		}
 		
@@ -87,19 +89,10 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 		root.add(scarfSlot, 5, 7);
 		
 		applyLeftButton.setOnClick(() -> {
-			ScreenNetworking.of(this, NetworkSide.CLIENT).send(APPLY_LEFT_MESSAGE, buf->{
-				buf.writeVarInt(patternSizeSlider.getValue());
-				buf.writeVarInt(repetitionsSlider.getValue());
-			});
+			ScreenNetworking.of(this, NetworkSide.CLIENT).send(ApplyMessage.ID, ApplyMessage.CODEC, new ApplyMessage(patternSizeSlider.getValue(), repetitionsSlider.getValue()));
 		});
+		
 		root.add(applyLeftButton, 1, 7, 4, 1);
-		applyRightButton.setOnClick(() -> {
-			ScreenNetworking.of(this, NetworkSide.CLIENT).send(APPLY_RIGHT_MESSAGE, buf->{
-				buf.writeVarInt(patternSizeSlider.getValue());
-				buf.writeVarInt(repetitionsSlider.getValue());
-			});
-		});
-		root.add(applyRightButton, 6, 7, 4, 1);
 		
 		Map<String, Map<String, TrinketInventory>> inventoryMap = TrinketsApi.getTrinketComponent(playerInventory.player).get().getInventory();
 		Map<String, TrinketInventory> chestGroup = inventoryMap.get("chest");
@@ -118,26 +111,34 @@ public class ScarfTableGuiDescription extends SyncedGuiDescription implements Gh
 		root.validate(this);
 	}
 	
-	public void applyLeft(PacketByteBuf buf) {
+	public void apply(ApplyMessage message) {
 		if (blockEntity == null) return;
-		
-		int patternSize = buf.readVarInt();
-		int repetitions = buf.readVarInt();
-		
-		blockEntity.applyLeft(patternSize, repetitions);
-	}
-	
-	public void applyRight(PacketByteBuf buf) {
-		if (blockEntity == null) return;
-		
-		int patternSize = buf.readVarInt();
-		int repetitions = buf.readVarInt();
-		
-		blockEntity.applyRight(patternSize, repetitions);
+		blockEntity.applyPattern(message.patternSize(), message.repeatCount());
 	}
 	
 	@Override
 	public GhostInventory getGhostInventory() {
 		return ghostInventory;
+	}
+	
+	public static record ApplyMessage(int patternSize, int repeatCount) {
+		public static final Identifier ID = Identifier.of(ScarvesMod.MODID, "apply");
+		public static final PacketCodec<PacketByteBuf, ApplyMessage> PACKET_CODEC = PacketCodec.of(ApplyMessage::write, ApplyMessage::new);
+		public static final Codec<ApplyMessage> CODEC = RecordCodecBuilder.create(
+				(instance) -> {
+					return instance.group(
+							Codecs.NONNEGATIVE_INT.fieldOf("PatternSize").forGetter(ApplyMessage::patternSize),
+							Codecs.NONNEGATIVE_INT.fieldOf("RepeatCount").forGetter(ApplyMessage::repeatCount)
+					).apply(instance, ApplyMessage::new);
+				});
+		
+		public ApplyMessage(PacketByteBuf buf) {
+			this(buf.readVarInt(), buf.readVarInt());
+		}
+		
+		public void write(PacketByteBuf buf) {
+			buf.writeVarInt(patternSize);
+			buf.writeVarInt(repeatCount);
+		}
 	}
 }

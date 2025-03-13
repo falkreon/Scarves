@@ -1,6 +1,11 @@
 package blue.endless.scarves;
 
-import blue.endless.scarves.api.FabricSquareRegistry;
+import java.util.ArrayList;
+import java.util.List;
+
+import blue.endless.scarves.api.FabricSquare;
+import blue.endless.scarves.api.RepeatType;
+import blue.endless.scarves.api.ScarfDesign;
 import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
 import blue.endless.scarves.util.ImplementedInventory;
 import net.minecraft.block.BlockState;
@@ -10,8 +15,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -26,8 +30,7 @@ public class ScarfStaplerBlockEntity extends BlockEntity implements ImplementedI
 	private Text customName;
 	public static final int SCARF_SLOT = 0;
 	public static final int LEFT_SLOT = 1;
-	public static final int RIGHT_SLOT = 2;
-	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(2, ItemStack.EMPTY);
 	
 	public ScarfStaplerBlockEntity(BlockPos pos, BlockState state) {
 		super(ScarvesBlocks.SCARF_STAPLER_ENTITY, pos, state);
@@ -39,15 +42,15 @@ public class ScarfStaplerBlockEntity extends BlockEntity implements ImplementedI
 	}
 	
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		Inventories.readNbt(nbt, inventory);
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+		Inventories.readNbt(nbt, inventory, registryLookup);
+		super.readNbt(nbt, registryLookup);
 	}
 	
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		Inventories.writeNbt(nbt, inventory);
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
+		Inventories.writeNbt(nbt, inventory, registryLookup);
+		super.writeNbt(nbt, registryLookup);
 	}
 	
 	public void setCustomName(Text name) {
@@ -69,43 +72,90 @@ public class ScarfStaplerBlockEntity extends BlockEntity implements ImplementedI
 		return Text.translatable(getCachedState().getBlock().getTranslationKey());
 	}
 	
-	public void staple() {
+	private <T> List<T> immutableMerge(List<T> list, T t) {
+		ArrayList<T> tmp = new ArrayList<>();
+		tmp.addAll(list);
+		tmp.add(t);
+		return List.copyOf(tmp);
+	}
+	
+	private <T> List<T> immutableMerge(List<T> a, List<T> b) {
+		ArrayList<T> tmp = new ArrayList<>();
+		tmp.addAll(a);
+		tmp.addAll(b);
+		return List.copyOf(tmp);
+	}
+	
+	public boolean staple() {
 		ItemStack leftSlot = this.getStack(LEFT_SLOT);
-		ItemStack rightSlot = this.getStack(RIGHT_SLOT);
-		if (leftSlot.isEmpty() && rightSlot.isEmpty()) return;
+		if (leftSlot.isEmpty()) return false;
 		
 		ItemStack scarf = this.getStack(SCARF_SLOT);
-		if (scarf.isEmpty()) return;
+		if (scarf.isEmpty()) return false;
 		
-		//Check for capped lengths
-		NbtCompound tag = scarf.getOrCreateNbt();
-		NbtList leftSquares = tag.getList("LeftScarf", NbtElement.COMPOUND_TYPE);
-		NbtList rightSquares = tag.getList("RightScarf", NbtElement.COMPOUND_TYPE);
+		ScarfDesign component = scarf.get(ScarfDesign.COMPONENT);
+		if (component == null) component = new ScarfDesign(RepeatType.FROM_START, 0, List.of());
+		if (component.squares().size() * component.repeatCount() >= STAPLER_CAP) return false; // No room to staple more
 		
-		if (!leftSlot.isEmpty() && leftSquares.size()>=STAPLER_CAP) return;
-		if (!rightSlot.isEmpty() && rightSquares.size()>=STAPLER_CAP) return;
+		ItemStack toStaple = this.removeStack(LEFT_SLOT, 1);
+		if (toStaple.isEmpty()) return false; // Shouldn't happen
 		
-		ItemStack toStapleLeft = this.removeStack(LEFT_SLOT, 1);
-		ItemStack toStapleRight = this.removeStack(RIGHT_SLOT, 1);
+		// If this is a scarf, try to preserve or reconcile the repeat pattern.
+		// If this is a fabric square, use the repeat pattern already on the scarf.
 		
-		if (toStapleLeft!=ItemStack.EMPTY) {
-			NbtList toAdd = FabricSquareRegistry.getStaplerData(toStapleLeft);
-			for(NbtElement elem : toAdd) {
-				if (leftSquares.size()>=512) break;
-				if (elem instanceof NbtCompound compound) leftSquares.add(compound);
+		ScarfDesign toStapleDesign = toStaple.get(ScarfDesign.COMPONENT);
+		if (toStapleDesign != null) {
+			if (component.repeatCount() == 0 || component.squares().isEmpty()) {
+				// Existing scarf is empty, and repeatType doesn't matter. Just set the new scarf design
+				scarf.set(ScarfDesign.COMPONENT, toStapleDesign);
+				this.setStack(SCARF_SLOT, scarf);
+				return true;
 			}
-			tag.put("LeftScarf", leftSquares);
-		}
-		
-		if (toStapleRight!=ItemStack.EMPTY) {
-			NbtList toAdd = FabricSquareRegistry.getStaplerData(toStapleRight);
-			for(NbtElement elem : toAdd) {
-				if (rightSquares.size()>=512) break;
-				if (elem instanceof NbtCompound compound) rightSquares.add(compound);
+			
+			if (component.squares().equals(toStapleDesign.squares())) {
+				// We can just add their repeat counts together
+				ScarfDesign newDesign = new ScarfDesign(
+						component.repeatType(),
+						component.repeatCount() + toStapleDesign.repeatCount(),
+						component.squares()
+						);
+				scarf.set(ScarfDesign.COMPONENT, newDesign);
+				this.setStack(SCARF_SLOT, scarf);
+				return true;
 			}
-			tag.put("RightScarf", rightSquares);
+			
+			if (component.repeatCount() > 1 || toStapleDesign.repeatCount() > 1) {
+				// We can't represent X repeats of A and then Y repeats of B without unrolling the repeats. For now,
+				// reject this case.
+				inventory.get(LEFT_SLOT).increment(1);
+				this.setStack(LEFT_SLOT, inventory.get(LEFT_SLOT));
+				return false;
+			}
+			
+			//It's a single-repeat pattern tacked onto a single-repeat pattern. Merge them into one long single-repeat!
+			ScarfDesign newDesign = new ScarfDesign(
+					component.repeatType(),
+					1,
+					immutableMerge(component.squares(), toStapleDesign.squares())
+					);
+			scarf.set(ScarfDesign.COMPONENT, newDesign);
+			this.setStack(SCARF_SLOT, scarf);
+			return true;
+			
+		} else {
+			FabricSquare toStapleSquare = toStaple.get(FabricSquare.COMPONENT);
+			if (toStapleSquare == null) return false; // neither a scarf nor a square
+			
+			// Tack this square onto the end of the existing scarf component
+			ScarfDesign newDesign = new ScarfDesign(
+					component.repeatType(),
+					Math.max(1, component.repeatCount()),
+					immutableMerge(component.squares(), toStapleSquare)
+					);
+			
+			scarf.set(ScarfDesign.COMPONENT, newDesign);
+			this.setStack(SCARF_SLOT, scarf);
+			return true;
 		}
-		
-		this.setStack(SCARF_SLOT, scarf);
 	}
 }

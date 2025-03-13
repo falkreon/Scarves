@@ -2,7 +2,6 @@ package blue.endless.scarves;
 
 import com.mojang.serialization.MapCodec;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -10,6 +9,7 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -19,10 +19,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager.Builder;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ public class ScarfTableBlock extends BlockWithEntity {
 	private static final VoxelShape SHAPE = VoxelShapes.cuboid(2*PX, 0*PX, 2*PX, 14*PX, 16*PX, 14*PX);
 	
 	protected ScarfTableBlock() {
-		super(FabricBlockSettings.copyOf(Blocks.CRAFTING_TABLE).resistance(8));
+		super(Block.Settings.copy(Blocks.CRAFTING_TABLE).resistance(8));
 	}
 	
 	protected ScarfTableBlock(Block.Settings settings) {
@@ -51,8 +51,9 @@ public class ScarfTableBlock extends BlockWithEntity {
 		return new ScarfTableBlockEntity(pos, state);
 	}
 	
+	
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (!world.isClient) { 
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			if (player instanceof ServerPlayerEntity serverPlayer) {
@@ -72,12 +73,12 @@ public class ScarfTableBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName() && world.getBlockEntity(pos) instanceof ScarfTableBlockEntity blockEntity) {
-			blockEntity.setCustomName(itemStack.getName());
+		Text customName = itemStack.get(DataComponentTypes.CUSTOM_NAME);
+		if (customName != null && world.getBlockEntity(pos) instanceof ScarfTableBlockEntity blockEntity) {
+			blockEntity.setCustomName(customName);
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (state.isOf(newState.getBlock())) {

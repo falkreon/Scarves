@@ -4,6 +4,7 @@
   ],
 
   "slots": [
-    "chest/scarf"
+    "head/left_scarf",
+    "head/right_scarf"
   ]
 }

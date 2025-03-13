@@ -1,5 +1,5 @@
 package blue.endless.scarves.client;
 
 public interface ITickDeprivationAware {
-	public boolean engination_isTickDeprived(long currentTick);
+	public boolean scarves_isTickDeprived(long currentTick);
 }

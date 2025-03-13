@@ -34,7 +34,10 @@ public class EmiIntegration implements EmiPlugin {
 			
 			WWidget widget = screen.getScreenHandler().getRootPanel().hit(hitX, hitY);
 			if (widget instanceof WGhostSlot ghostSlot) {
-				if (!ghostSlot.getFilter().test(targetItem)) return false;
+				if (!ghostSlot.getFilter().test(targetItem)) {
+					System.out.println(targetItem.getComponentChanges());
+					return false;
+				}
 				int index = ghostSlot.getIndex();
 				
 				screen.getScreenHandler().getGhostInventory().setGhostItem(index, targetItem);

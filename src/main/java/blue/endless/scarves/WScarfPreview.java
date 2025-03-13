@@ -1,7 +1,7 @@
 package blue.endless.scarves;
 
 import blue.endless.scarves.api.FabricSquare;
-import blue.endless.scarves.api.FabricSquareRegistry;
+import blue.endless.scarves.api.ScarfDesign;
 import blue.endless.scarves.ghost.GhostInventory;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
@@ -15,8 +15,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.PlayerScreenHandler;
 
 public class WScarfPreview extends WWidget {
@@ -67,7 +65,7 @@ public class WScarfPreview extends WWidget {
 			for(int i=0; i<squares; i++) {
 				ItemStack stack = inventory.getGhostItem(i);
 				if (!stack.isEmpty()) {
-					FabricSquare square = FabricSquareRegistry.forItem(stack);
+					FabricSquare square = stack.get(FabricSquare.COMPONENT);
 					if (square != null) {
 						paintSquare(context, ix, iy, panelSize, panelSize, square);
 					}
@@ -80,13 +78,13 @@ public class WScarfPreview extends WWidget {
 			
 		} else if (exemplarInventory != null) {
 			ItemStack exemplar = exemplarInventory.getStack(exemplarSlot);
-			NbtList list = FabricSquareRegistry.getStaplerData(exemplar);
+			ScarfDesign design = exemplar.get(ScarfDesign.COMPONENT);
 			
-			int squares = Math.min(maxSquares, list.size());
+			if (design == null) return;
+			
+			int squares = Math.min(maxSquares, design.squares().size());
 			for(int i=0; i<squares; i++) {
-				NbtCompound squareNbt = list.getCompound(i);
-				FabricSquare square = FabricSquare.fromCompound(squareNbt);
-				paintSquare(context, ix, iy, panelSize, panelSize, square);
+				paintSquare(context, ix, iy, panelSize, panelSize, design.squares().get(i));
 				
 				ix += dx;
 				iy += dy;

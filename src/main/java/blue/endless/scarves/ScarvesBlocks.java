@@ -2,7 +2,6 @@ package blue.endless.scarves;
 
 import blue.endless.scarves.gui.ScarfStaplerGuiDescription;
 import blue.endless.scarves.gui.ScarfTableGuiDescription;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -51,13 +50,13 @@ public class ScarvesBlocks {
 	}
 	
 	private static <T extends Block> T register(T block, String id) {
-		Registry.register(Registries.BLOCK, new Identifier(ScarvesMod.MODID, id), (Block) block);
+		Registry.register(Registries.BLOCK, Identifier.of(ScarvesMod.MODID, id), (Block) block);
 		return block;
 	}
 	
-	private static <T extends BlockEntity> BlockEntityType<T> register(String id, FabricBlockEntityTypeBuilder.Factory<T> factory, Block block) {
-		BlockEntityType<T> result = FabricBlockEntityTypeBuilder.<T>create(factory, block).build();
-		Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(ScarvesMod.MODID, id), result);
+	private static <T extends BlockEntity> BlockEntityType<T> register(String id, BlockEntityType.BlockEntityFactory<T> factory, Block block) {
+		BlockEntityType<T> result = BlockEntityType.Builder.create(factory, block).build();
+		Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(ScarvesMod.MODID, id), result);
 		return result;
 	}
 }

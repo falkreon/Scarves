@@ -12,8 +12,6 @@ import net.minecraft.item.ItemStack;
 
 @Mixin(LivingEntity.class)
 public class EntityEquipmentMixin {
-
-	
 	@Inject(at = { @At("HEAD") }, method = "getPreferredEquipmentSlot", cancellable = true)
 	private static EquipmentSlot getPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> ci) {
 		if (stack.isOf(ScarvesItems.SCARF_STAPLER)) ci.setReturnValue(EquipmentSlot.HEAD);
