@@ -24,5 +24,9 @@
 	"flag.pridelib.nonbinary":"Nonbinary",
 	"flag.pridelib.pansexual":"Pansexual",
 	"flag.pridelib.rainbow":  "Rainbow",
-	"flag.pridelib.transgender":"Transgender"
+	"flag.pridelib.transgender":"Transgender",
+	
+	"emi.category.scarves.stapling": "Scarf Stapling",
+	
+	"info.scarves.serger": "The Scarf Serger can be used to create advanced scarf designs and apply them to scarves at no cost. Supports drag and drop from EMI."
 }

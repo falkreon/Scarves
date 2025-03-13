@@ -1,7 +1,9 @@
 package blue.endless.scarves.api;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import blue.endless.scarves.ScarvesMod;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
@@ -38,6 +40,10 @@ public class FabricSquareRegistry {
 	public static void register(ItemConvertible item, FabricSquare square) {
 		entries.remove(item.asItem());
 		entries.put(item.asItem(), square);
+	}
+	
+	public static Set<Item> allRegistrations() {
+		return Set.copyOf(entries.keySet());
 	}
 	
 	/**

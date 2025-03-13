@@ -3,7 +3,7 @@
   "group": "scarf",
   "key": {
     "W": {
-      "item": "minecraft:white_wool"
+      "tag": "minecraft:wool"
     }
   },
   "pattern": [
@@ -12,6 +12,6 @@
     " W "
   ],
   "result": {
-    "item": "scarves:scarf"
+    "id": "scarves:scarf"
   }
 } 
