@@ -49,7 +49,7 @@ dependencies {
 	
 	modImplementation "dev.emi:trinkets:3.10.0"
 	
-	modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
+	modImplementation "dev.emi:emi-fabric:${emi_version}:api"
 	modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
 	
 	modImplementation include("io.github.cottonmc:LibGui:${project.libgui_version}")

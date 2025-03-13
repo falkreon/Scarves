@@ -9,7 +9,6 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import net.minecraft.component.ComponentChanges;
@@ -35,7 +34,7 @@ public class EmiIntegration implements EmiPlugin {
 	private static final Identifier STAPLING_CATEGORY_ID = Identifier.of("scarves", "stapling");
 	private static final EmiRecipeCategory STAPLING_RECIPES = new EmiRecipeCategory(
 			STAPLING_CATEGORY_ID,
-			new ItemEmiStack(ScarvesItems.SCARF_STAPLER, ComponentChanges.EMPTY, 1)
+			EmiStack.of(ScarvesItems.SCARF_STAPLER, ComponentChanges.EMPTY, 1)
 			);
 	
 	@Override
@@ -99,7 +98,7 @@ public class EmiIntegration implements EmiPlugin {
 	
 	private static class StaplerRecipe implements EmiRecipe {
 		private static final EmiIngredient SCARF_INGREDIENT = EmiIngredient.of(Ingredient.ofItems(ScarvesItems.SCARF));
-		private static final EmiStack scarfStack = ItemEmiStack.of(ScarvesItems.SCARF);
+		private static final EmiStack scarfStack = EmiStack.of(ScarvesItems.SCARF);
 		private final Identifier itemId;
 		//private final ItemEmiStack stack;
 		private final EmiIngredient ingredient;
@@ -144,7 +143,7 @@ public class EmiIntegration implements EmiPlugin {
 		public void addWidgets(WidgetHolder widgets) {
 			widgets.addSlot(ingredient, 18, 0);
 			widgets.addTexture(EmiTexture.EMPTY_ARROW, getDisplayWidth() / 2 - (EmiTexture.EMPTY_ARROW.regionWidth / 2), 1);
-			widgets.addSlot(ItemEmiStack.of(ScarvesItems.SCARF), getDisplayWidth() - 18 - 18, 0).recipeContext(this);
+			widgets.addSlot(EmiStack.of(ScarvesItems.SCARF), getDisplayWidth() - 18 - 18, 0).recipeContext(this);
 		}
 		
 	}
