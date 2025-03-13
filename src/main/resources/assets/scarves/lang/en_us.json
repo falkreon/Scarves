@@ -7,8 +7,8 @@
 	"trinkets.slot.chest.right_scarf": "Right Scarf",
 	"tag.trinkets.slot.head.left_scarf": "Left Scarf",
 	"tag.trinkets.slot.head.right_scarf": "Right Scarf",
-	"tag.trinkets.item.head.left_scarf": "Eligible for Left Scarf slot",
-	"tag.trinkets.item.head.right_scarf": "Eligible for Right Scarf slot",
+	"tag.item.trinkets.head.left_scarf": "Eligible for Left Scarf slot",
+	"tag.item.trinkets.head.right_scarf": "Eligible for Right Scarf slot",
 	
 	"gui.scarves.pattern_length": "Pattern Length: %s",
 	"gui.scarves.repetitions": "Repetitions: %s",

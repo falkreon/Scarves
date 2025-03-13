@@ -10,19 +10,17 @@ import com.google.common.collect.ImmutableList;
 
 import blue.endless.scarves.api.AnchoredSlot;
 import blue.endless.scarves.client.IScarfHaver;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.Identifier;
 
-@Mixin(AbstractClientPlayerEntity.class)
-public abstract class ClientPlayerEntityMixin {
+@Mixin(BeeEntity.class)
+public class MixinBeeScarfHaver {
+	
 	@Inject(method="<init>", at = @At("TAIL"))
 	public void afterInit(CallbackInfo info) {
 		if (this instanceof IScarfHaver scarfHaver) {
 			ImmutableList<AnchoredSlot> slotConfig = ImmutableList.<AnchoredSlot>builder()
-				.add(new AnchoredSlot("body", new Vector3f( 0.19f, -0.30f, 0.1f), Identifier.of("trinkets", "head/left_scarf/0")))
-				.add(new AnchoredSlot("body", new Vector3f(-0.19f, -0.30f, 0.1f), Identifier.of("trinkets", "head/right_scarf/0")))
-				//TODO: This works *terribly*. There's a lot more work to be done matching up registration points with model locations.
-				//.add(new AnchoredSlot("left_arm", new Vector3f( 0, 0, 0), Identifier.of("minecraft", "weapon.offhand")))
+				.add(new AnchoredSlot("", new Vector3f( 3.5f/16f, -18/16f, 4/16f), Identifier.of("trinkets", "head/left_scarf/0")))
 				.build();
 			
 			scarfHaver.iScarfHaver_setAnchoredSlots(slotConfig);

@@ -18,12 +18,12 @@ public class GhostInventoryNetworking {
 	
 	public static void init() {
 		PayloadTypeRegistry.playC2S().register(Payload.ID, Payload.CODEC);
+		PayloadTypeRegistry.playS2C().register(Payload.ID, Payload.CODEC);
 		
 		ServerPlayNetworking.registerGlobalReceiver(Payload.ID, (payload, context) -> {
 			if (payload.slot() < 0) return;
 			
 			context.server().execute(() -> {
-				System.out.println("Received Ghost on server: "+payload.slot+" -> "+payload.stack.toString());
 				if (context.player().currentScreenHandler instanceof GhostInventoryHolder gui) {
 					gui.getGhostInventory().setGhostItem(payload.slot(), payload.stack());
 					gui.getGhostInventory().markDirty();
@@ -34,9 +34,9 @@ public class GhostInventoryNetworking {
 	
 	@Environment(EnvType.CLIENT)
 	public static void initClient() {
-		PayloadTypeRegistry.playS2C().register(Payload.ID, Payload.CODEC);
+		
+		
 		ClientPlayNetworking.registerGlobalReceiver(Payload.ID, (payload, context) -> {
-			System.out.println("Received Ghost on client: "+payload.slot+" -> "+payload.stack.toString());
 			if (payload.slot() < 0) return;
 			
 			context.client().execute(() -> {

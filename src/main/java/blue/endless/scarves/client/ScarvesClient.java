@@ -36,12 +36,6 @@ public class ScarvesClient implements ClientModInitializer {
 		
 		ColorProviderRegistry.ITEM.register(ScarvesClient::getScarfTint, ScarvesItems.SCARF);
 		
-		
-		//MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(MinecraftClient.getInstance().player);
-		//PlayerEntityModel.getModelData(Dilation.NONE, 0).getRoot().createPart(64, 64);
-		//PlayerEntityModel<ClientPlayerEntity> model = new PlayerEntityModel<>(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER), slim)
-		
-		//PlayerEntityModel<ClientPlayerEntity> model = new PlayerEntityModel<ClientPlayerEntity>(.getRoot(), false);
 	}
 	
 	public static int getScarfTint(ItemStack stack, int index) {
@@ -73,86 +67,12 @@ public class ScarvesClient implements ClientModInitializer {
 		for(Entity entity : ctx.world().getEntities()) {
 			if (entity instanceof IScarfHaver scarfHaver) {
 				
-				/*
-				Map<String, Matrix4f> registrations = ModelExtractor.extract(entity, tickDelta);
-				Matrix4f bodyMatrix = registrations.get("body");
-				if (bodyMatrix != null) {
-					if (entity instanceof AbstractClientPlayerEntity player) {
-						//MORE DEBUG
-						System.out.println("\n"+bodyMatrix.toString());
-					}
-					
-					
-					Vec3d lerpedPosD = entity.getLerpedPos(tickDelta);
-					Vector4f lerpedPos = new Vector4f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z, 1);
-					
-					ctx.matrixStack().push();
-					
-					Matrix4f bodyRotation = new Matrix4f().rotationY((float) -(scarfHaver.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180d));
-					
-					Vector4f a = new Vector4f(-4/16f, 0, -2/16f, 1);
-					Vector4f b = new Vector4f(-4/16f, 12/16f, -2/16f, 1);
-					Vector4f c = new Vector4f( 4/16f, 12/16f, -2/16f, 1);
-					Vector4f d = new Vector4f( 4/16f, 0, -2/16f, 1);
-					
-					a.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
-					b.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
-					c.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
-					d.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
-					
-					bodyMatrix.transform(a);
-					bodyMatrix.transform(b);
-					bodyMatrix.transform(c);
-					bodyMatrix.transform(d);
-					
-					a.add(0,0,-0.25f, 0);
-					b.add(0,0,-0.25f, 0);
-					c.add(0,0,-0.25f, 0);
-					d.add(0,0,-0.25f, 0);
-					
-					bodyRotation.transform(a);
-					bodyRotation.transform(b);
-					bodyRotation.transform(c);
-					bodyRotation.transform(d);
-					
-					a.add(lerpedPos);
-					b.add(lerpedPos);
-					c.add(lerpedPos);
-					d.add(lerpedPos);
-					
-					ScarfRenderer.quad(
-							a,
-							b,
-							c,
-							d,
-							
-							new FabricSquare(Identifier.of("minecraft", "block/white_wool")),
-							
-							ctx.consumers(),
-							ctx.matrixStack(),
-							LightmapTextureManager.pack(15,15)
-							);
-					
-					ctx.matrixStack().pop();
-				}*/
-				
 				try {
-					//final boolean tickDeprived = (entity instanceof ITickDeprivationAware depAware) ?
-					//	depAware.scarves_isTickDeprived(ctx.world().getTime()) :
-					//	false;
-					//final boolean tickDeprived = false;
 					
 					scarfHaver.iScarfHaver_getAttachments(ctx.tickCounter().getTickDelta(false)).forEach( it-> {
-						//Physics - gravity and collisions run on the tick thread
+						
 						List<ScarfNode> nodes = it.nodes();
 						if (nodes.isEmpty()) return;
-						/*
-						nodes.get(0).pullTowards(it.getLocation());
-						if (nodes.size()>1) for(int i=1; i<nodes.size(); i++) {
-							ScarfNode prev = nodes.get(i-1);
-							ScarfNode cur = nodes.get(i);
-							cur.pullTowards(prev.position);
-						}*/
 						
 						//Rendering
 						Vec3d prev = it.getLocation();
@@ -160,9 +80,6 @@ public class ScarvesClient implements ClientModInitializer {
 						for(int i=0; i<nodes.size(); i++) {
 							ScarfNode cur = nodes.get(i);
 							Vec3d lerpedPos = cur.getLerpedPosition(tickDelta);
-							//Vec3d lerpedPos = (tickDeprived) ? 
-							//		cur.getPosition() :
-							//		cur.getLerpedPosition(ctx.tickCounter().getTickDelta(false));
 							
 							BlockPos curPos = new BlockPos(
 									(int) lerpedPos.x,
