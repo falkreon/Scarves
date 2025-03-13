@@ -28,7 +28,7 @@ public class ScarfItem extends TrinketItem {
 	public static final String ID = "scarf";
 	public static final int MAX_CREATIVE_SCARF_LENGTH = 8;
 	
-	private static final Set<Identifier> TRY_TO_EQUIP = Set.of(Identifier.of("minecraft", "bee"));
+	private static final Set<Identifier> TRY_TO_EQUIP = Set.of(Identifier.of("minecraft", "bee"), Identifier.of("minecraft", "fox"));
 	
 	public ScarfItem() {
 		super(new Item.Settings()
@@ -49,7 +49,7 @@ public class ScarfItem extends TrinketItem {
 	
 	@Override
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		System.out.println("Clicked on "+Registries.ENTITY_TYPE.getId(entity.getType()));
+		//System.out.println("Clicked on "+Registries.ENTITY_TYPE.getId(entity.getType()));
 		
 		if (TRY_TO_EQUIP.contains(Registries.ENTITY_TYPE.getId(entity.getType()))) {
 			if (entity.getEntityWorld().isClient) return ActionResult.SUCCESS;
@@ -59,12 +59,12 @@ public class ScarfItem extends TrinketItem {
 				Map<String, Map<String, TrinketInventory>> inventoryMap = component.get().getInventory();
 				Map<String, TrinketInventory> headGroup = inventoryMap.get("head");
 				if (headGroup == null) {
-					System.out.println("No head group!");
+					// System.out.println("No head group!");
 				} else {
 					
 					TrinketInventory scarfInventory = headGroup.get("left_scarf");
 					if (scarfInventory == null) {
-						System.out.println("No left_scarf!");
+						//System.out.println("No left_scarf!");
 					} else {
 						//Yeet the old item outta there
 						ItemStack oldItem = scarfInventory.removeStack(0);

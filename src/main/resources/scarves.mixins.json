@@ -9,7 +9,8 @@
   "client": [
     "EntityScarfHaverMixin",
 	"ClientPlayerEntityMixin",
-	"MixinBeeScarfHaver"
+	"MixinBeeScarfHaver",
+	"MixinFoxScarfHaver"
   ],
   "injectors": {
     "defaultRequire": 1
