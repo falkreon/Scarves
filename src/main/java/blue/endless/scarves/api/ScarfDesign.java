@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.ListCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import blue.endless.scarves.ScarvesMod;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -36,7 +37,24 @@ public record ScarfDesign(RepeatType repeatType, int repeatCount, List<FabricSqu
 	
 	public static final ComponentType<ScarfDesign> COMPONENT = ComponentType.<ScarfDesign>builder().codec(CODEC).packetCodec(PACKET_CODEC).build();
 	
-	private static final RandomGeneratorFactory<RandomGenerator> RANDOM_FACTORY = RandomGeneratorFactory.of("L32X64MixRandom");
+	private static RandomGeneratorFactory<RandomGenerator> RANDOM_FACTORY = null;
+	
+	static {
+		try {
+			RANDOM_FACTORY = RandomGeneratorFactory.of("L32X64MixRandom");
+		} catch (Throwable t) {
+			try {
+				RANDOM_FACTORY = RandomGeneratorFactory.getDefault();
+			} catch (Throwable u) {
+				try {
+					RANDOM_FACTORY = RandomGeneratorFactory.all().findFirst().get();
+				} catch (Throwable v) {
+					ScarvesMod.LOGGER.error("Host system has no RandomGenerator algorithms at all - no factories exist. Falling back to java.util.Random");
+				}
+			}
+		}
+		
+	}
 	
 	public ScarfDesign(PacketByteBuf buf) {
 		this(
@@ -67,6 +85,10 @@ public record ScarfDesign(RepeatType repeatType, int repeatCount, List<FabricSqu
 			effectiveIndex = (squares.size() - 2) - effectiveIndex;
 			return squares.get(effectiveIndex);
 		} else if (repeatType == RepeatType.RANDOM) {
+			if (RANDOM_FACTORY == null) {
+				int square = ((int) (Math.random() * squares.size())) % squares.size();
+				return squares.get(square);
+			}
 			int effectiveBin = i / squares.size();
 			int effectiveIndex = i % squares.size();
 			ArrayList<FabricSquare> bin = new ArrayList<>(squares);
