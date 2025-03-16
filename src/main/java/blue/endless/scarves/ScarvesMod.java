@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.api.FabricSquareRegistry;
 import blue.endless.scarves.api.ScarfDesign;
 import blue.endless.scarves.ghost.GhostInventoryNetworking;
@@ -38,6 +39,7 @@ public class ScarvesMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(MODID, "scarf"), ScarfDesign.COMPONENT);
+		Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(MODID, "fabric_square"), FabricSquare.COMPONENT);
 		
 		ITEM_GROUP = FabricItemGroup.builder()
 			.displayName(Text.literal("Scarves"))
