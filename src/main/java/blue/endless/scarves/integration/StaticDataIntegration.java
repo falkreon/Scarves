@@ -1,24 +1,32 @@
 package blue.endless.scarves.integration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import blue.endless.jankson.Jankson;
+import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import blue.endless.scarves.ScarvesMod;
+import blue.endless.scarves.api.AnchoredSlot;
+import blue.endless.scarves.api.EntityAttachmentRegistry;
 import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.api.FabricSquareRegistry;
 import gay.debuggy.staticdata.api.StaticData;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.MapColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import org.joml.Vector3f;
 
 public class StaticDataIntegration {
 	private static Map<Identifier, JsonElement> deferrals = new HashMap<>();
@@ -43,7 +51,7 @@ public class StaticDataIntegration {
 					});
 				}
 			} catch (Throwable t) {
-				ScarvesMod.LOGGER.error("Could not load static data \"" + dataItem.getResourceId() + "\"", t);
+				ScarvesMod.LOGGER.error("[StaticData] Could not load fabric square: \"" + dataItem.getResourceId() + "\"", t);
 			}
 		}
 		
@@ -56,9 +64,95 @@ public class StaticDataIntegration {
 					FabricSquareRegistry.register(item, square);
 				});
 			} catch (Throwable t) {
-				ScarvesMod.LOGGER.error("Could not load static data for deferred item \"" + id + "\"", t);
+				ScarvesMod.LOGGER.error("[StaticData] Could not load deferred item \"" + id + "\"", t);
 			}
 		});
+		
+		for(var dataItem : StaticData.getDataInDirectory(Identifier.of("scarves:slot_configs"), true)) {
+			try {
+				JsonElement rootElem = jankson.loadElement(dataItem.getAsStream());
+				if (rootElem instanceof JsonObject rootObj) {
+					rootObj.forEach((String entityTypeIdString, JsonElement slotSpec) -> {
+						Identifier typeId = Identifier.of(entityTypeIdString);
+						List<AnchoredSlot> slots = new ArrayList<>();
+						if (slotSpec instanceof JsonObject configObj) {
+							String ifLoaded = configObj.get(String.class, "ifLoaded");
+							if (ifLoaded != null) if (!FabricLoader.getInstance().isModLoaded(ifLoaded)) return;
+							
+							JsonElement slotsElem = configObj.get("slots");
+							if (slotsElem instanceof JsonArray slotsArray) {
+								// Array of AnchoredSlot
+								for(JsonElement elem : slotsArray) {
+									Optional<AnchoredSlot> slot = getAnchoredSlot(elem);
+									if (slot.isEmpty()) {
+										ScarvesMod.LOGGER.warn("[StaticData] Bad AnchoredSlot for entity \""+typeId.toString()+"\" supplied by namespace "+dataItem.getModId());
+									} else {
+										slots.add(slot.get());
+									}
+								}
+								
+							} else if (slotsElem instanceof JsonObject slotsObject) {
+								// Just one AnchoredSlot
+								Optional<AnchoredSlot> slot = getAnchoredSlot(slotsObject);
+								if (slot.isEmpty()) {
+									ScarvesMod.LOGGER.warn("[StaticData] Bad AnchoredSlot for entity \""+typeId.toString()+"\" supplied by namespace "+dataItem.getModId());
+								} else {
+									slots.add(slot.get());
+								}
+							}
+						} else if (slotSpec instanceof JsonArray configArray) {
+							// Just a bare array of AnchoredSlot
+							
+							for(JsonElement elem : configArray) {
+								Optional<AnchoredSlot> slot = getAnchoredSlot(elem);
+								if (slot.isEmpty()) {
+									ScarvesMod.LOGGER.warn("[StaticData] Bad AnchoredSlot for entity \""+typeId.toString()+"\" supplied by namespace "+dataItem.getModId());
+								} else {
+									slots.add(slot.get());
+								}
+							}
+						}
+						
+						if (!slots.isEmpty()) {
+							EntityAttachmentRegistry.addSlotConfig(typeId, slots);
+						}
+					});
+				}
+			} catch (Throwable t) {
+				ScarvesMod.LOGGER.error("[StaticData] Could not load slot config: \"" + dataItem.getResourceId() + "\"", t);
+			}
+		}
+		
+		Set<Identifier> configured = EntityAttachmentRegistry.getRegisteredTypes();
+		ScarvesMod.LOGGER.info("[StaticData] Entity attachment registrations processed for the following entities: "+configured.toString());
+		
+	}
+	
+	public static Optional<AnchoredSlot> getAnchoredSlot(JsonElement elem) {
+		if (elem instanceof JsonObject obj) {
+			try {
+				String anchorPoint = obj.get(String.class, "anchor_point");
+				if (anchorPoint == null) anchorPoint = "";
+				String slot = obj.get(String.class, "slot");
+				if (slot == null) return Optional.empty();
+				
+				Vector3f offset = new Vector3f();
+				JsonElement offsetElem = obj.get("offset");
+				if (offsetElem instanceof JsonArray arr && arr.size() == 3) {
+					offset = new Vector3f(
+							arr.getFloat(0, 0f),
+							arr.getFloat(1, 0f),
+							arr.getFloat(2, 0f)
+							);
+				}
+				
+				return Optional.of(new AnchoredSlot(anchorPoint, offset, Identifier.of(slot)));
+			} catch (Throwable t) {
+				return Optional.empty();
+			}
+		}
+		
+		return Optional.empty();
 	}
 	
 	public static Optional<FabricSquare> getFabricSquare(JsonElement elem, int defaultColor, boolean defaultEmissive) {

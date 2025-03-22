@@ -5,9 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "EntityScarfHaverMixin",
-	"ClientPlayerEntityMixin",
-	"MixinBeeScarfHaver",
-	"MixinFoxScarfHaver"
+	"ClientPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

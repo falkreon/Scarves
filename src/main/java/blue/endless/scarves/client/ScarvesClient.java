@@ -20,11 +20,9 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
-import net.minecraft.world.chunk.light.LightingProvider;
 
 public class ScarvesClient implements ClientModInitializer {
 	public static final double SCARF_GRAVITY = -0.01;

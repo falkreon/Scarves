@@ -17,15 +17,16 @@ import net.minecraft.util.Identifier;
 public abstract class ClientPlayerEntityMixin {
 	private final float BODY_HEIGHT = 12/16f;
 	private final float SCARF_Y = BODY_HEIGHT - 3/16f;
+	private final float BODY_WIDTH = 16/16f;
+	private final float BODY_CENTERLINE = BODY_WIDTH / 2f;
 	
 	@Inject(method="<init>", at = @At("TAIL"))
 	public void afterInit(CallbackInfo info) {
+		
 		if (this instanceof IScarfHaver scarfHaver) {
 			ImmutableList<AnchoredSlot> slotConfig = ImmutableList.<AnchoredSlot>builder()
-				.add(new AnchoredSlot("body", new Vector3f( 0.19f, SCARF_Y, 0.1f), Identifier.of("trinkets", "head/left_scarf/0")))
-				.add(new AnchoredSlot("body", new Vector3f(-0.19f, SCARF_Y, 0.1f), Identifier.of("trinkets", "head/right_scarf/0")))
-				//TODO: This works *terribly*. There's a lot more work to be done matching up registration points with model locations.
-				//.add(new AnchoredSlot("left_arm", new Vector3f( 0, 0, 0), Identifier.of("minecraft", "weapon.offhand")))
+				.add(new AnchoredSlot("body", new Vector3f( BODY_CENTERLINE + 0.38f, SCARF_Y, 0.1f), Identifier.of("trinkets", "head/left_scarf/0")))
+				.add(new AnchoredSlot("body", new Vector3f( BODY_CENTERLINE - 0.38f, SCARF_Y, 0.1f), Identifier.of("trinkets", "head/right_scarf/0")))
 				.build();
 			
 			scarfHaver.iScarfHaver_setAnchoredSlots(slotConfig);

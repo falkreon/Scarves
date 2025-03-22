@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.google.common.collect.ImmutableList;
 
+import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.api.AnchoredSlot;
+import blue.endless.scarves.api.EntityAttachmentRegistry;
 import blue.endless.scarves.api.ScarfLogic;
 import blue.endless.scarves.client.IScarfHaver;
 import blue.endless.scarves.client.ITickDeprivationAware;
@@ -24,8 +26,11 @@ import blue.endless.scarves.client.ModelExtractor;
 import blue.endless.scarves.client.SimpleScarfAttachment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -40,6 +45,12 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 	
 	private long iScarfHaver_lastValidTick = 0L;
 
+	@Inject(method="<init>", at = @At("TAIL"))
+	public void afterInit(CallbackInfo info) {
+		List<AnchoredSlot> registeredSlots = EntityAttachmentRegistry.getSlotConfig((Entity) (Object) this);
+		iScarfHaver_scarfSlotConfiguration = ImmutableList.copyOf(registeredSlots);
+	}
+	
 	@Override
 	public ImmutableList<AnchoredSlot> iScarfHaver_getAnchoredSlots() {
 		return iScarfHaver_scarfSlotConfiguration;
@@ -56,7 +67,14 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 		if (iScarfHaver_scarfSlotConfiguration == null) return List.of();
 		
 		//Map<String, Matrix4f> matrices = ModelExtractor.extract((Entity) (Object) this, tickDelta);
-		Map<String, ModelExtractor.Part> modelParts = ModelExtractor.extractFully((Entity) (Object) this, tickDelta);
+		
+		Map<String, ModelExtractor.Part> modelParts = Map.of();
+		for(AnchoredSlot slot : iScarfHaver_scarfSlotConfiguration) {
+			if (slot.anchorPoint() != null && !slot.anchorPoint().isBlank()) {
+				modelParts = ModelExtractor.extractFully((Entity) (Object) this, tickDelta);
+				break;
+			}
+		}
 		
 		//Clear outdated attachments from cache
 		List<AnchoredSlot> toRemove = new ArrayList<>();
@@ -85,7 +103,26 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 			//}
 			Vector3f transformedAnchor = lerpedPos;
 			if (part != null) {
-				transformedAnchor = part.transformRelative(slot.offset()).add(lerpedPos);
+				Vector3f offset = slot.offset().add(0, 0, 0, new Vector3f());
+				if ((Object) this instanceof PlayerEntity player) {
+					if (player.getPose() == EntityPose.FALL_FLYING) {
+						if (MinecraftClient.getInstance().player == (Object) this) {
+							if (!MinecraftClient.getInstance().gameRenderer.getCamera().isThirdPerson()) {
+								// Own playerEntity in first person
+								offset.add(0, -1f, 8f);
+							} else {
+								// Own playerEntity in third person
+								offset.add(0, 2f, 8f);
+							}
+						} else {
+							// Other playerEntity, presumably in third person.
+							offset.add(0, 2f, 8f);
+						}
+					}
+					
+				}
+				
+				transformedAnchor = part.transformRelative(offset).add(lerpedPos);
 			} else {
 				Matrix4f bodyRotation = new Matrix4f().rotationY((float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180d));
 				Vector4f vec = new Vector4f(slot.offset().x, slot.offset().y, slot.offset().z, 1);
@@ -110,7 +147,7 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 			
 			//bodyRotation.transform(a);
 			
-			//transformedAnchor.add(lerpedPos);
+			
 			attachment.setLocation(new Vec3d(transformedAnchor.x, transformedAnchor.y, transformedAnchor.z));
 			
 			
