@@ -20,7 +20,7 @@ public class MixinFoxScarfHaver {
 	public void afterInit(CallbackInfo info) {
 		if (this instanceof IScarfHaver scarfHaver) {
 			ImmutableList<AnchoredSlot> slotConfig = ImmutableList.<AnchoredSlot>builder()
-				.add(new AnchoredSlot("", new Vector3f( 3.5f/16f, -18/16f, 4/16f), Identifier.of("trinkets", "head/left_scarf/0")))
+				.add(new AnchoredSlot("", new Vector3f( 3.5f/16f, 0.25f, 4/16f), Identifier.of("trinkets", "head/left_scarf/0")))
 				.build();
 			
 			scarfHaver.iScarfHaver_setAnchoredSlots(slotConfig);

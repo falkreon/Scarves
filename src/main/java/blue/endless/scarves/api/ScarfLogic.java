@@ -32,18 +32,6 @@ public class ScarfLogic {
 		
 		while(nodes.size()>designLength) nodes.remove(nodes.size()-1);
 		
-		//System.out.println("Updating scarf attachment - with gravity");
-		/*
-		if (nodes.size() > 0) {
-			//System.out.println("Anchor: "+anchorPosition+" Node: "+nodes.get(0).getLastPosition()+" => "+nodes.get(0).getPosition());
-			NumberFormat fmt = NumberFormat.getInstance();
-			fmt.setMaximumFractionDigits(1);
-			fmt.setMinimumFractionDigits(1);
-			System.out.println("Anchor: "+fmt.format(anchorPosition.y)+" Node: "+fmt.format(nodes.get(0).getLastPosition().y)+" => "+fmt.format(nodes.get(0).getPosition().y));
-		} else {
-			System.out.println("FIRST RUN: "+anchorPosition);
-		}*/
-		
 		Vec3d lastPos = anchorPosition;
 		for(int i=0; i<designLength; i++) {
 			FabricSquare square = design.get(i);
@@ -74,7 +62,9 @@ public class ScarfLogic {
 				}
 			}
 			
-			Vec3d wind = Vec3d.ZERO; //ScarvesApiImpl.getInstance().getWind(world, node.getPosition());
+			//Vec3d wind = Vec3d.ZERO; //ScarvesApiImpl.getInstance().getWind(world, node.getPosition());
+			Vec3d wind = Wind.getWind(world, node.getPosition());
+					//new Vec3d(1, 0, 0.25f).normalize().multiply(0.125);
 			//cap wind
 			if (wind.lengthSquared()>maxWindMagnitude*maxWindMagnitude) {
 				wind = wind.normalize().multiply(maxWindMagnitude);

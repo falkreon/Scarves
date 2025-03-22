@@ -1,6 +1,9 @@
 package blue.endless.scarves.client;
 
 import java.util.List;
+import java.util.Map;
+
+import org.joml.Vector3f;
 
 import blue.endless.scarves.ScarvesBlocks;
 import blue.endless.scarves.ScarvesItems;
@@ -17,9 +20,11 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
+import net.minecraft.world.chunk.light.LightingProvider;
 
 public class ScarvesClient implements ClientModInitializer {
 	public static final double SCARF_GRAVITY = -0.01;
@@ -69,6 +74,43 @@ public class ScarvesClient implements ClientModInitializer {
 				
 				try {
 					
+					//Render debug cage
+					/*
+					final Vec3d lerpedPos = entity.getLerpedPos(tickDelta);
+					final Vector3f lerpedPosF = new Vector3f((float) lerpedPos.x, (float) lerpedPos.y, (float) lerpedPos.z);
+					Map<String, ModelExtractor.Part> parts = ModelExtractor.extractFully(entity, tickDelta);
+					for(ModelExtractor.Part part : parts.values()) {
+						//float bodyYaw = (float) -(scarfHaver.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180);
+						FabricSquare wool = new FabricSquare(Identifier.of("minecraft", "block/white_wool"));
+						int fullbright = LightmapTextureManager.pack(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE);
+						
+						// lerping outside 0<=t<=1 extrapolates instead of interpolating. This inflates the cube just a tiny bit.
+						Vector3f a = part.transformRelative(new Vector3f(-0.01f,-0.01f, -0.01f)).add(lerpedPosF);
+						Vector3f b = part.transformRelative(new Vector3f(-0.01f, 1.01f, -0.01f)).add(lerpedPosF);
+						Vector3f c = part.transformRelative(new Vector3f( 1.01f, 1.01f, -0.01f)).add(lerpedPosF);
+						Vector3f d = part.transformRelative(new Vector3f( 1.01f,-0.01f, -0.01f)).add(lerpedPosF);
+						
+						ScarfRenderer.quad(
+								a, b, c, d,
+								wool,
+								ctx.consumers(),
+								ctx.matrixStack(),
+								fullbright
+								);
+						
+						Vector3f e = part.transformRelative(new Vector3f( 1.01f, -0.01f, 1.01f)).add(lerpedPosF);
+						Vector3f f = part.transformRelative(new Vector3f( 1.01f,  1.01f, 1.01f)).add(lerpedPosF);
+						
+						
+						ScarfRenderer.quad(
+								d, c, f, e,
+								wool,
+								ctx.consumers(),
+								ctx.matrixStack(),
+								fullbright
+								);
+					}*/
+					
 					scarfHaver.iScarfHaver_getAttachments(ctx.tickCounter().getTickDelta(false)).forEach( it-> {
 						
 						List<ScarfNode> nodes = it.nodes();
@@ -76,17 +118,17 @@ public class ScarvesClient implements ClientModInitializer {
 						
 						//Rendering
 						Vec3d prev = it.getLocation();
-						Vec3d prevUp = new Vec3d(0,1,0).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
+						Vec3d prevUp = new Vec3d(0,ScarfNode.FABRIC_SQUARE_WIDTH,0);
 						for(int i=0; i<nodes.size(); i++) {
 							ScarfNode cur = nodes.get(i);
-							Vec3d lerpedPos = cur.getLerpedPosition(tickDelta);
+							Vec3d lerpedNodePos = cur.getLerpedPosition(tickDelta);
 							
 							BlockPos curPos = new BlockPos(
-									(int) lerpedPos.x,
-									(int) (lerpedPos.y + 0.25),
-									(int) lerpedPos.z
+									(int) lerpedNodePos.x,
+									(int) (lerpedNodePos.y + 0.25),
+									(int) lerpedNodePos.z
 									);
-							Vec3d forwardVec = lerpedPos.subtract(prev).normalize();
+							Vec3d forwardVec = lerpedNodePos.subtract(prev).normalize();
 							Vec3d tempUpVec = (forwardVec.x==0&&forwardVec.z==0) ? new Vec3d(1,0,0) : new Vec3d(0,1,0);
 							Vec3d rightVec = forwardVec.crossProduct(tempUpVec);
 							Vec3d curUp = forwardVec.crossProduct(rightVec).multiply(ScarfNode.FABRIC_SQUARE_WIDTH);
@@ -102,8 +144,8 @@ public class ScarvesClient implements ClientModInitializer {
 							ScarfRenderer.quad(
 									prev,
 									prev.add(prevUp),
-									lerpedPos.add(curUp),
-									lerpedPos,
+									lerpedNodePos.add(curUp),
+									lerpedNodePos,
 									
 									cur.square,
 									
@@ -112,7 +154,7 @@ public class ScarvesClient implements ClientModInitializer {
 									nodeLight
 									);
 							
-							prev = lerpedPos;
+							prev = lerpedNodePos;
 							prevUp = curUp;
 						}
 					});

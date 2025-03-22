@@ -1,6 +1,7 @@
 package blue.endless.scarves.client;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import blue.endless.scarves.ScarvesMod;
@@ -72,6 +73,16 @@ public class ScarfRenderer {
 		} else {
 			ScarvesMod.LOGGER.error("Block Atlas Texture isn't a block atlas");
 		}
+	}
+	
+	public static void quad(Vector3f a, Vector3f b, Vector3f c, Vector3f d, FabricSquare square, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int light) {
+		quad(
+				new Vec3d(a.x, a.y, a.z),
+				new Vec3d(b.x, b.y, b.z),
+				new Vec3d(c.x, c.y, c.z),
+				new Vec3d(d.x, d.y, d.z),
+				square, vertexConsumers, matrices, light
+				);
 	}
 	
 	public static void quad(Vector4f a, Vector4f b, Vector4f c, Vector4f d, FabricSquare square, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int light) {

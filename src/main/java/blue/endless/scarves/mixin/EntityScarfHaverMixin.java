@@ -55,7 +55,8 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 	public Collection<SimpleScarfAttachment> iScarfHaver_getAttachments(float tickDelta) {
 		if (iScarfHaver_scarfSlotConfiguration == null) return List.of();
 		
-		Map<String, Matrix4f> matrices = ModelExtractor.extract((Entity) (Object) this, tickDelta);
+		//Map<String, Matrix4f> matrices = ModelExtractor.extract((Entity) (Object) this, tickDelta);
+		Map<String, ModelExtractor.Part> modelParts = ModelExtractor.extractFully((Entity) (Object) this, tickDelta);
 		
 		//Clear outdated attachments from cache
 		List<AnchoredSlot> toRemove = new ArrayList<>();
@@ -64,6 +65,12 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 		}
 		for(AnchoredSlot slot : toRemove) iScarfHaver_scarfAttachments.remove(slot);
 		
+		
+		Vec3d lerpedPosD = ((Entity) (Object) this).getLerpedPos(tickDelta);
+		//Vector4f lerpedPos = new Vector4f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z, 1);
+		Vector3f lerpedPos = new Vector3f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z);
+		//float bodyYaw = (float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180);
+		
 		// Update / add current attachments
 		for(AnchoredSlot slot : iScarfHaver_scarfSlotConfiguration) {
 			SimpleScarfAttachment attachment = iScarfHaver_scarfAttachments.computeIfAbsent(slot, (it) -> {
@@ -71,25 +78,40 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 				return result;
 			});
 			
-			Vec3d lerpedPosD = ((Entity) (Object) this).getLerpedPos(tickDelta);
-			Vector4f lerpedPos = new Vector4f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z, 1);
+			ModelExtractor.Part part = modelParts.get(slot.anchorPoint());
+			//if (part == null) {
+			//	Vec3d  lerpedPos.add(slot.offset());
+			//	continue;
+			//}
+			Vector3f transformedAnchor = lerpedPos;
+			if (part != null) {
+				transformedAnchor = part.transformRelative(slot.offset()).add(lerpedPos);
+			} else {
+				Matrix4f bodyRotation = new Matrix4f().rotationY((float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180d));
+				Vector4f vec = new Vector4f(slot.offset().x, slot.offset().y, slot.offset().z, 1);
+				bodyRotation.transform(vec);
+				transformedAnchor = new Vector3f(vec.x, vec.y, vec.z).add(lerpedPos);
+			}
 			
-			Matrix4f bodyRotation = new Matrix4f().rotationY((float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180d));
 			
-			Vector4f a = new Vector4f(0, 0, 0, 1);
+			//Matrix4f bodyRotation = new Matrix4f().rotationY((float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180d));
+			
+			//Vector4f a = new Vector4f(0, 0, 0, 1);
 			
 			
-			a.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
+			//a.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
 			
-			Matrix4f bodyMatrix = ModelExtractor.fetch((Entity) (Object) this, new Matrix4f(), matrices, slot.anchorPoint(), slot.offset());
-			bodyMatrix.transform(a);
+			//Matrix4f bodyMatrix = ModelExtractor.fetch((Entity) (Object) this, new Matrix4f(), matrices, slot.anchorPoint(), slot.offset());
+			//bodyMatrix.transform(a);
 			
-			a.add(0,0,-0.25f, 0);
+			//a.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
 			
-			bodyRotation.transform(a);
+			//a.add(0,0,-0.25f, 0);
 			
-			a.add(lerpedPos);
-			attachment.setLocation(new Vec3d(a.x, a.y, a.z));
+			//bodyRotation.transform(a);
+			
+			//transformedAnchor.add(lerpedPos);
+			attachment.setLocation(new Vec3d(transformedAnchor.x, transformedAnchor.y, transformedAnchor.z));
 			
 			
 			
