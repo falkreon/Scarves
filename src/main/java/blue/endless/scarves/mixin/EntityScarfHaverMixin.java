@@ -26,6 +26,7 @@ import blue.endless.scarves.client.ModelExtractor;
 import blue.endless.scarves.client.SimpleScarfAttachment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -87,7 +88,7 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 		Vec3d lerpedPosD = ((Entity) (Object) this).getLerpedPos(tickDelta);
 		//Vector4f lerpedPos = new Vector4f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z, 1);
 		Vector3f lerpedPos = new Vector3f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z);
-		//float bodyYaw = (float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180);
+		float bodyYaw = (float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180);
 		
 		// Update / add current attachments
 		for(AnchoredSlot slot : iScarfHaver_scarfSlotConfiguration) {
@@ -102,27 +103,46 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 			//	continue;
 			//}
 			Vector3f transformedAnchor = lerpedPos;
+			
 			if (part != null) {
-				Vector3f offset = slot.offset().add(0, 0, 0, new Vector3f());
+				Vector3f offset = new Vector3f(slot.offset());
+				float pitchEstimate = 0f;
+				
 				if ((Object) this instanceof PlayerEntity player) {
-					if (player.getPose() == EntityPose.FALL_FLYING) {
-						if (MinecraftClient.getInstance().player == (Object) this) {
-							if (!MinecraftClient.getInstance().gameRenderer.getCamera().isThirdPerson()) {
-								// Own playerEntity in first person
-								offset.add(0, -1f, 8f);
+					if (FabricLoader.getInstance().isModLoaded("sodium")) {
+						//Just estimate the player tilt the best we can
+						if (player.getPose() == EntityPose.FALL_FLYING) pitchEstimate = 1;
+						if (player.getPose() == EntityPose.SWIMMING) {
+							pitchEstimate = (float) (player.getPitch(tickDelta) * Math.PI / 180) + 1.25f;
+						}
+						
+					} else {
+						if (player.getPose() == EntityPose.FALL_FLYING) {
+							if (FabricLoader.getInstance().isModLoaded("sodium")) {
+								//Just estimate the player tilt the best we can
+								if (player.getPose() == EntityPose.FALL_FLYING) pitchEstimate = 1;
+								if (player.getPose() == EntityPose.SWIMMING) {
+									pitchEstimate = (float) (player.getPitch(tickDelta) * Math.PI / 180) + 1.25f;
+								}
 							} else {
-								// Own playerEntity in third person
-								offset.add(0, 2f, 8f);
+								if (MinecraftClient.getInstance().player == (Object) this) {
+									if (!MinecraftClient.getInstance().gameRenderer.getCamera().isThirdPerson()) {
+										// Own playerEntity in first person
+										offset.add(0, -1f, 8f);
+									} else {
+										// Own playerEntity in third person
+										offset.add(0, 2f, 8f);
+									}
+								} else {
+									// Other playerEntity, presumably in third person.
+									offset.add(0, 2f, 8f);
+								}
 							}
-						} else {
-							// Other playerEntity, presumably in third person.
-							offset.add(0, 2f, 8f);
 						}
 					}
-					
 				}
 				
-				transformedAnchor = part.transformRelative(offset).add(lerpedPos);
+				transformedAnchor = part.transformRelative(offset, bodyYaw, pitchEstimate).add(lerpedPos);
 			} else {
 				Matrix4f bodyRotation = new Matrix4f().rotationY((float) -(this.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180d));
 				Vector4f vec = new Vector4f(slot.offset().x, slot.offset().y, slot.offset().z, 1);

@@ -10,6 +10,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -29,48 +30,6 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 public class ModelExtractor {
-	@SuppressWarnings("unchecked")
-	public static <T extends Entity> Map<String, Matrix4f> extract(T entity, float tickDelta) {
-		//HashMap<String, ModelPart> modelMap = new HashMap<>();
-		HashMap<String, Matrix4f> matrixMap = new HashMap<>();
-		
-		EntityRenderer<T> renderer = (EntityRenderer<T>) MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity);
-		if (renderer instanceof FeatureRendererContext<?, ?> ctx) {
-			EntityModel<T> model = (EntityModel<T>) ctx.getModel();
-			float animationProgress = 0f;
-			float limbPos = 0f;
-			float limbSpeed = 0f;
-			if (entity instanceof LivingEntity living) {
-				animationProgress = living.age + tickDelta;
-				limbPos = living.limbAnimator.getPos(tickDelta);
-				if (living.isBaby()) limbPos *= 3f;
-				limbSpeed = living.limbAnimator.getSpeed(tickDelta);
-				if (limbSpeed > 1) limbSpeed = 1;
-			}
-			
-			MatrixStack matrixStack = new MatrixStack();
-			
-			if (entity instanceof AbstractClientPlayerEntity player) {
-				setPlayerTransforms(player, matrixStack, 0f, 0f, tickDelta, 0f);
-			}
-			model.animateModel(entity, limbPos, limbSpeed, tickDelta);
-			model.setAngles(entity, limbPos, limbSpeed, animationProgress, entity.getHeadYaw(), entity.getPitch());
-			
-			Matrix4f base = matrixStack.peek().getPositionMatrix().invert(new Matrix4f());
-			
-			if (model instanceof BipedEntityModel biped) {
-				matrixMap.put(EntityModelPartNames.BODY, extractMatrix(biped.body, base));
-				matrixMap.put(EntityModelPartNames.LEFT_ARM, extractMatrix(biped.leftArm, base));
-				matrixMap.put(EntityModelPartNames.RIGHT_ARM, extractMatrix(biped.rightArm, base));
-				matrixMap.put(EntityModelPartNames.LEFT_LEG, extractMatrix(biped.leftLeg, base));
-				matrixMap.put(EntityModelPartNames.RIGHT_LEG, extractMatrix(biped.rightLeg, base));
-				matrixMap.put(EntityModelPartNames.HEAD, extractMatrix(biped.head, base));
-				matrixMap.put(EntityModelPartNames.HAT, extractMatrix(biped.hat, base));
-			}
-		}
-		
-		return matrixMap;
-	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends Entity> Map<String, Part> extractFully(T entity, float tickDelta) {
@@ -148,9 +107,13 @@ public class ModelExtractor {
 				matrixStack.scale(lx, lx, lx);
 				float animationProgress2 = entity.age + tickDelta;
 				setupLivingTransforms(living, matrixStack, animationProgress2, lerpedBodyYaw, tickDelta, lx);
-				matrixStack.scale(-1.0F, -1.0F, 1.0F);
-				//this.scale(livingEntity, matrixStack, g); // We really don't have an equivalent here.
-				matrixStack.translate(0.0F, -1.501F, 0.0F);
+				
+				if (!FabricLoader.getInstance().isModLoaded("sodium")) {
+					matrixStack.scale(-1.0F, -1.0F, 1.0F);
+					//this.scale(livingEntity, matrixStack, g); // We really don't have an equivalent here.
+					matrixStack.translate(0.0F, -1.501F, 0.0F);
+				}
+				
 				float o = 0.0F;
 				float p = 0.0F;
 				if (!living.hasVehicle() && living.isAlive()) {
@@ -173,7 +136,15 @@ public class ModelExtractor {
 				model.animateModel(entity, limbPos, limbSpeed, tickDelta);
 				model.setAngles(entity, limbPos, limbSpeed, animationProgress, entity.getHeadYaw(), entity.getPitch());
 			}
+			
+			//if (FabricLoader.getInstance().isModLoaded("sodium")) {
+			//	matrixStack.scale(0, -1, 0);
+			//}
+			
+			
 			Matrix4f base = matrixStack.peek().getPositionMatrix().invert(new Matrix4f());
+			
+			
 			
 			if (model instanceof BipedEntityModel biped) {
 				//System.out.println("Extracting biped modelparts");
@@ -265,10 +236,14 @@ public class ModelExtractor {
 					);
 		}
 		
-		public Vector3f transform(Vector3f vec) {
+		public Vector3f transform(Vector3f vec, float bodyYaw, float pitchEstimate) {
 			Vector4f working = new Vector4f(vec.x, vec.y, vec.z, 1);
 			matrix.transform(working);
-			return new Vector3f(working.x, working.y, working.z);
+			if (FabricLoader.getInstance().isModLoaded("sodium")) {
+				return new Vector3f(-working.x, -working.y + 1.501f, working.z).rotateX(pitchEstimate).rotateY(bodyYaw);
+			} else {
+				return new Vector3f(working.x, working.y, working.z);
+			}
 		}
 		
 		public Vector3f corner(Vector3f relative) {
@@ -279,8 +254,8 @@ public class ModelExtractor {
 					);
 		}
 		
-		public Vector3f transformRelative(Vector3f relative) {
-			return transform(corner(relative));
+		public Vector3f transformRelative(Vector3f relative, float bodyYaw, float pitchEstimate) {
+			return transform(corner(relative), bodyYaw, pitchEstimate);
 		}
 		
 		private float lerp(float a, float b, float t) {
@@ -291,38 +266,6 @@ public class ModelExtractor {
 	public static Matrix4f fetch(Entity entity, Matrix4f baseMatrix, Map<String, Matrix4f> mapping, String path, Vector3f translate) {
 		Matrix4f part = mapping.getOrDefault(path, new Matrix4f());
 		return part.translate(translate, new Matrix4f());
-	}
-	
-	/*
-	public static Part transform(Part p, float bodyYaw) {
-		Matrix4f bodyRotation = new Matrix4f().rotationY(bodyYaw);
-		
-		Vector4f min = new Vector4f(p.x1 / 16f, p.y1 / 16f, p.z1 / 16f, 1);
-		Vector4f max = new Vector4f(p.x2 / 16f, p.y2 / 16f, p.z2 / 16f, 1);
-		
-		min.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
-		max.add(0, -1.501f, 0, 0).mul(-1, -1, 1, 1);
-		
-		p.matrix.transform(min);
-		p.matrix.transform(max);
-		
-		min.add(0, 0, -0.25f, 0);
-		max.add(0, 0, -0.25f, 0);
-		
-		bodyRotation.transform(min);
-		bodyRotation.transform(max);
-		
-		return new Part(p.matrix, p.pivot, min.x, min.y, min.z, max.x, max.y, max.z);
-	}*/
-	
-	private static Matrix4f extractMatrix(final ModelPart part, Matrix4f base) {
-		MatrixStack partMatrix = new MatrixStack();
-		partMatrix.push();
-		partMatrix.multiplyPositionMatrix(base);
-		
-		part.rotate(partMatrix);
-		partMatrix.translate(part.pivotX, part.pivotY, part.pivotZ);
-		return partMatrix.peek().getPositionMatrix();
 	}
 	
 	private static void setPlayerTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h, float i) {

@@ -16,10 +16,14 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
@@ -78,15 +82,22 @@ public class ScarvesClient implements ClientModInitializer {
 					final Vector3f lerpedPosF = new Vector3f((float) lerpedPos.x, (float) lerpedPos.y, (float) lerpedPos.z);
 					Map<String, ModelExtractor.Part> parts = ModelExtractor.extractFully(entity, tickDelta);
 					for(ModelExtractor.Part part : parts.values()) {
-						//float bodyYaw = (float) -(scarfHaver.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180);
+						float bodyYaw = (float) -(scarfHaver.iScarfHaver_getBodyYaw(tickDelta) * Math.PI / 180);
 						FabricSquare wool = new FabricSquare(Identifier.of("minecraft", "block/white_wool"));
 						int fullbright = LightmapTextureManager.pack(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE);
+						float pitchEstimate = 0f;
+						if (FabricLoader.getInstance().isModLoaded("sodium")) {
+							if (entity.getPose() == EntityPose.FALL_FLYING) pitchEstimate = 1;
+							if (entity.getPose() == EntityPose.SWIMMING) {
+								pitchEstimate = (float) (entity.getPitch(tickDelta) * Math.PI / 180) + 1.25f;
+							}
+						}
 						
 						// lerping outside 0<=t<=1 extrapolates instead of interpolating. This inflates the cube just a tiny bit.
-						Vector3f a = part.transformRelative(new Vector3f(-0.01f,-0.01f, -0.01f)).add(lerpedPosF);
-						Vector3f b = part.transformRelative(new Vector3f(-0.01f, 1.01f, -0.01f)).add(lerpedPosF);
-						Vector3f c = part.transformRelative(new Vector3f( 1.01f, 1.01f, -0.01f)).add(lerpedPosF);
-						Vector3f d = part.transformRelative(new Vector3f( 1.01f,-0.01f, -0.01f)).add(lerpedPosF);
+						Vector3f a = part.transformRelative(new Vector3f(-0.01f,-0.01f, -0.01f), bodyYaw, pitchEstimate).add(lerpedPosF);
+						Vector3f b = part.transformRelative(new Vector3f(-0.01f, 1.01f, -0.01f), bodyYaw, pitchEstimate).add(lerpedPosF);
+						Vector3f c = part.transformRelative(new Vector3f( 1.01f, 1.01f, -0.01f), bodyYaw, pitchEstimate).add(lerpedPosF);
+						Vector3f d = part.transformRelative(new Vector3f( 1.01f,-0.01f, -0.01f), bodyYaw, pitchEstimate).add(lerpedPosF);
 						
 						ScarfRenderer.quad(
 								a, b, c, d,
@@ -96,8 +107,8 @@ public class ScarvesClient implements ClientModInitializer {
 								fullbright
 								);
 						
-						Vector3f e = part.transformRelative(new Vector3f( 1.01f, -0.01f, 1.01f)).add(lerpedPosF);
-						Vector3f f = part.transformRelative(new Vector3f( 1.01f,  1.01f, 1.01f)).add(lerpedPosF);
+						Vector3f e = part.transformRelative(new Vector3f( 1.01f, -0.01f, 1.01f), bodyYaw, pitchEstimate).add(lerpedPosF);
+						Vector3f f = part.transformRelative(new Vector3f( 1.01f,  1.01f, 1.01f), bodyYaw, pitchEstimate).add(lerpedPosF);
 						
 						
 						ScarfRenderer.quad(
@@ -108,6 +119,7 @@ public class ScarvesClient implements ClientModInitializer {
 								fullbright
 								);
 					}*/
+					//End render debug cage
 					
 					scarfHaver.iScarfHaver_getAttachments(ctx.tickCounter().getTickDelta(false)).forEach( it-> {
 						
