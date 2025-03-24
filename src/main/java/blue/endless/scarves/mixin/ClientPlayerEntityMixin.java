@@ -25,8 +25,8 @@ public abstract class ClientPlayerEntityMixin {
 		
 		if (this instanceof IScarfHaver scarfHaver) {
 			ImmutableList<AnchoredSlot> slotConfig = ImmutableList.<AnchoredSlot>builder()
-				.add(new AnchoredSlot("body", new Vector3f( BODY_CENTERLINE + 0.38f, SCARF_Y, 0.1f), Identifier.of("trinkets", "head/left_scarf/0")))
-				.add(new AnchoredSlot("body", new Vector3f( BODY_CENTERLINE - 0.38f, SCARF_Y, 0.1f), Identifier.of("trinkets", "head/right_scarf/0")))
+				.add(new AnchoredSlot("body", new Vector3f( BODY_CENTERLINE + 0.38f, SCARF_Y, 0.2f), Identifier.of("trinkets", "head/left_scarf/0")))
+				.add(new AnchoredSlot("body", new Vector3f( BODY_CENTERLINE - 0.38f, SCARF_Y, 0.2f), Identifier.of("trinkets", "head/right_scarf/0")))
 				.build();
 			
 			scarfHaver.iScarfHaver_setAnchoredSlots(slotConfig);

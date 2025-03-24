@@ -1,12 +1,10 @@
 package blue.endless.scarves.client;
 
 import java.util.List;
-import java.util.Map;
-
-import org.joml.Vector3f;
 
 import blue.endless.scarves.ScarvesBlocks;
 import blue.endless.scarves.ScarvesItems;
+import blue.endless.scarves.ScarvesMod;
 import blue.endless.scarves.api.FabricSquare;
 import blue.endless.scarves.api.ScarfDesign;
 import blue.endless.scarves.ghost.GhostInventoryNetworking;
@@ -20,10 +18,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
@@ -31,6 +26,7 @@ import net.minecraft.world.LightType;
 public class ScarvesClient implements ClientModInitializer {
 	public static final double SCARF_GRAVITY = -0.01;
 	public static final int UNCOLORED_SCARF_TINT = 0xFF_ddc8ab;
+	private static boolean suppressErrors = false;
 	
 	@Override
 	public void onInitializeClient() {
@@ -128,6 +124,10 @@ public class ScarvesClient implements ClientModInitializer {
 						
 						//Rendering
 						Vec3d prev = it.getLocation();
+						if (FabricLoader.getInstance().isModLoaded("sodium") && !ctx.camera().isThirdPerson()) {
+							Vec3d lookDirection = Vec3d.fromPolar(ctx.camera().getPitch(), ctx.camera().getYaw()).multiply(-0.25f);
+							prev = prev.add(lookDirection);
+						}
 						Vec3d prevUp = new Vec3d(0,ScarfNode.FABRIC_SQUARE_WIDTH,0);
 						for(int i=0; i<nodes.size(); i++) {
 							ScarfNode cur = nodes.get(i);
@@ -169,8 +169,12 @@ public class ScarvesClient implements ClientModInitializer {
 						}
 					});
 				} catch (Throwable t) {
-					//TODO: Quietly flag the player with an error?
-					t.printStackTrace();
+					// Happy medium between logging a stack trace every tick and not giving enough information to resolve the problem. The first error will be printed, and then subsequent frames
+					// will just gracefully degrade. I hope.
+					if (!suppressErrors) {
+						ScarvesMod.LOGGER.error("There was an error rendering scarves. Further errors will be suppressed.", t);
+						suppressErrors = true;
+					}
 				}
 			}
 		}

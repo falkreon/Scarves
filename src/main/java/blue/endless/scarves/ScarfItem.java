@@ -50,7 +50,7 @@ public class ScarfItem extends TrinketItem {
 	
 	@Override
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		System.out.println("Clicked on "+Registries.ENTITY_TYPE.getId(entity.getType()));
+		//System.out.println("Clicked on "+Registries.ENTITY_TYPE.getId(entity.getType()));
 		
 		if (entity instanceof PlayerEntity) return ActionResult.FAIL;
 		
