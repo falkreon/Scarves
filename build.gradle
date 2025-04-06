@@ -58,7 +58,7 @@ dependencies {
 	
 	modImplementation include("io.github.queerbric:pridelib:1.2.1+1.21")
 	
-	modImplementation include("maven.modrinth:mD4QIZsg:1.1.1+1.21.1") //Static Data
+	modImplementation include("maven.modrinth:mD4QIZsg:${staticdata_version}") //Static Data
 }
 
 processResources {
