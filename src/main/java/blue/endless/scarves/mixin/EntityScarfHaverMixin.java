@@ -3,6 +3,7 @@ package blue.endless.scarves.mixin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 	@Inject(method="<init>", at = @At("TAIL"))
 	public void afterInit(CallbackInfo info) {
 		List<AnchoredSlot> registeredSlots = EntityAttachmentRegistry.getSlotConfig((Entity) (Object) this);
-		iScarfHaver_scarfSlotConfiguration = ImmutableList.copyOf(registeredSlots);
+		iScarfHaver_setAnchoredSlots(ImmutableList.copyOf(registeredSlots));
 	}
 	
 	@Override
@@ -59,14 +60,18 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 	@Override
 	public void iScarfHaver_setAnchoredSlots(ImmutableList<AnchoredSlot> slots) {
 		this.iScarfHaver_scarfSlotConfiguration = slots;
+		
+		Iterator<AnchoredSlot> iterator = iScarfHaver_scarfAttachments.keySet().iterator();
+		while(iterator.hasNext()) {
+			AnchoredSlot slot = iterator.next();
+			if (!iScarfHaver_scarfSlotConfiguration.contains(slot)) iterator.remove();
+		}
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
 	public Collection<SimpleScarfAttachment> iScarfHaver_getAttachments(float tickDelta) {
 		if (iScarfHaver_scarfSlotConfiguration == null) return List.of();
-		
-		//Map<String, Matrix4f> matrices = ModelExtractor.extract((Entity) (Object) this, tickDelta);
 		
 		Map<String, ModelExtractor.Part> modelParts = Map.of();
 		for(AnchoredSlot slot : iScarfHaver_scarfSlotConfiguration) {
@@ -75,14 +80,6 @@ public abstract class EntityScarfHaverMixin implements IScarfHaver, ITickDepriva
 				break;
 			}
 		}
-		
-		//Clear outdated attachments from cache
-		List<AnchoredSlot> toRemove = new ArrayList<>();
-		for(AnchoredSlot slot : iScarfHaver_scarfAttachments.keySet()) {
-			if (!iScarfHaver_scarfSlotConfiguration.contains(slot)) toRemove.add(slot);
-		}
-		for(AnchoredSlot slot : toRemove) iScarfHaver_scarfAttachments.remove(slot);
-		
 		
 		Vec3d lerpedPosD = ((Entity) (Object) this).getLerpedPos(tickDelta);
 		//Vector4f lerpedPos = new Vector4f((float) lerpedPosD.x, (float) lerpedPosD.y, (float) lerpedPosD.z, 1);
